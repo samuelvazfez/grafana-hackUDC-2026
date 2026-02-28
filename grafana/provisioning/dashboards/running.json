@@ -79,7 +79,7 @@
             },
             "gridPos": {
                 "h": 6,
-                "w": 5,
+                "w": 4,
                 "x": 0,
                 "y": 1
             },
@@ -106,10 +106,28 @@
                         "type": "postgres",
                         "uid": "timescaledb"
                     },
+                    "editorMode": "code",
                     "format": "table",
                     "rawQuery": true,
                     "rawSql": "SELECT time AS \"time\", AVG(score) AS \"Running Score\"\nFROM meteogalicia.iad_running\nWHERE $__timeFilter(time)\n  AND (coord_index = CASE WHEN ${ciudad} = -1 THEN coord_index ELSE ${ciudad} END)\nGROUP BY time ORDER BY time DESC LIMIT 1",
-                    "refId": "A"
+                    "refId": "A",
+                    "sql": {
+                        "columns": [
+                            {
+                                "parameters": [],
+                                "type": "function"
+                            }
+                        ],
+                        "groupBy": [
+                            {
+                                "property": {
+                                    "type": "string"
+                                },
+                                "type": "groupBy"
+                            }
+                        ],
+                        "limit": 50
+                    }
                 }
             ],
             "title": "🏃 Running Score",
@@ -157,8 +175,8 @@
             },
             "gridPos": {
                 "h": 6,
-                "w": 5,
-                "x": 5,
+                "w": 4,
+                "x": 4,
                 "y": 1
             },
             "id": 2,
@@ -234,7 +252,7 @@
             "gridPos": {
                 "h": 3,
                 "w": 4,
-                "x": 10,
+                "x": 8,
                 "y": 1
             },
             "id": 3,
@@ -310,7 +328,7 @@
             "gridPos": {
                 "h": 3,
                 "w": 4,
-                "x": 14,
+                "x": 12,
                 "y": 1
             },
             "id": 5,
@@ -383,8 +401,8 @@
             },
             "gridPos": {
                 "h": 3,
-                "w": 3,
-                "x": 18,
+                "w": 4,
+                "x": 16,
                 "y": 1
             },
             "id": 4,
@@ -463,8 +481,8 @@
             },
             "gridPos": {
                 "h": 3,
-                "w": 3,
-                "x": 21,
+                "w": 4,
+                "x": 20,
                 "y": 1
             },
             "id": 8,
@@ -542,7 +560,7 @@
             "gridPos": {
                 "h": 3,
                 "w": 4,
-                "x": 10,
+                "x": 8,
                 "y": 4
             },
             "id": 6,
@@ -615,7 +633,7 @@
             "gridPos": {
                 "h": 3,
                 "w": 4,
-                "x": 14,
+                "x": 12,
                 "y": 4
             },
             "id": 10,
@@ -688,8 +706,8 @@
             },
             "gridPos": {
                 "h": 3,
-                "w": 3,
-                "x": 18,
+                "w": 4,
+                "x": 16,
                 "y": 4
             },
             "id": 9,
@@ -768,8 +786,8 @@
             },
             "gridPos": {
                 "h": 3,
-                "w": 3,
-                "x": 21,
+                "w": 4,
+                "x": 20,
                 "y": 4
             },
             "id": 7,
@@ -857,12 +875,12 @@
                 ]
             },
             "gridPos": {
-                "h": 7,
+                "h": 9,
                 "w": 24,
                 "x": 0,
                 "y": 7
             },
-            "id": 11,
+            "id": 103,
             "options": {
                 "cellHeight": "sm",
                 "showHeader": true
@@ -880,7 +898,7 @@
                     "refId": "A"
                 }
             ],
-            "title": "⏰ Mejor Hora para Correr (Próximas 24h)",
+            "title": "⏰ Mejor Hora para Correr",
             "type": "table"
         },
         {
@@ -889,7 +907,7 @@
                 "h": 1,
                 "w": 24,
                 "x": 0,
-                "y": 14
+                "y": 16
             },
             "id": 101,
             "panels": [],
@@ -962,7 +980,7 @@
                 "h": 8,
                 "w": 12,
                 "x": 0,
-                "y": 15
+                "y": 17
             },
             "id": 12,
             "options": {
@@ -1096,7 +1114,7 @@
                 "h": 8,
                 "w": 12,
                 "x": 12,
-                "y": 15
+                "y": 17
             },
             "id": 13,
             "options": {
@@ -1194,7 +1212,7 @@
                 "h": 7,
                 "w": 8,
                 "x": 0,
-                "y": 23
+                "y": 25
             },
             "id": 14,
             "options": {
@@ -1320,7 +1338,7 @@
                 "h": 7,
                 "w": 8,
                 "x": 8,
-                "y": 23
+                "y": 25
             },
             "id": 15,
             "options": {
@@ -1419,7 +1437,7 @@
                 "h": 7,
                 "w": 8,
                 "x": 16,
-                "y": 23
+                "y": 25
             },
             "id": 22,
             "options": {
@@ -1528,7 +1546,7 @@
                 "h": 9,
                 "w": 24,
                 "x": 0,
-                "y": 30
+                "y": 32
             },
             "id": 25,
             "options": {
@@ -1582,8 +1600,8 @@
         "list": [
             {
                 "current": {
-                    "text": "-1",
-                    "value": "-1"
+                    "text": "0",
+                    "value": "0"
                 },
                 "description": "Selecciona tu ciudad para filtrar todos los datos",
                 "includeAll": false,
@@ -1597,13 +1615,13 @@
         ]
     },
     "time": {
-        "from": "2026-02-16T12:25:51.504Z",
-        "to": "2026-03-12T12:25:51.504Z"
+        "from": "now-12h",
+        "to": "now+1d"
     },
     "timepicker": {},
     "timezone": "browser",
     "title": "🏃 Viabilidad Running Galicia",
     "uid": "running-galicia-v2",
-    "version": 5,
+    "version": 11,
     "weekStart": ""
 }
