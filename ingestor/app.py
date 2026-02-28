@@ -20,6 +20,7 @@ from parsers.aemet import parse_aemet_observaciones
 from fetchers.air import fetch_air_quality, fetch_forecast, fetch_pollen
 from parsers.air import parse_air_quality, parse_forecast, parse_pollen
 from iad import compute_iad_running
+from alerter import check_and_send_alerts
 
 logging.basicConfig(
     level=logging.INFO,
@@ -248,6 +249,7 @@ def main():
     last_meteosix = 0
     last_aemet = 0
     last_air = 0
+    last_alert = 0
 
     while True:
         now = time.time()
@@ -275,6 +277,14 @@ def main():
             except Exception:
                 log.exception("Error en ingesta Calidad del Aire")
             last_air = time.time()
+
+        # Alertas Python a Discord
+        if now - last_alert >= 300:  # Cada 5 minutos
+            try:
+                check_and_send_alerts()
+            except Exception:
+                log.exception("Error comprobando alertas")
+            last_alert = time.time()
 
         # Dormir 60s entre comprobaciones
         time.sleep(60)

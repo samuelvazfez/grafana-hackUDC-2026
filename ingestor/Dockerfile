@@ -6,7 +6,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copiar todo el código (modular)
-COPY config.py cache.py db.py iad.py app.py ./
+COPY config.py cache.py db.py iad.py alerter.py app.py ./
 COPY fetchers/ ./fetchers/
 COPY parsers/ ./parsers/
 

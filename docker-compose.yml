@@ -33,6 +33,11 @@ services:
       GF_SECURITY_ADMIN_USER: ${GRAFANA_USER}
       GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD}
       GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_SECURITY_ALLOW_EMBEDDING: "true"
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: "Viewer"
+      GF_UNIFIED_ALERTING_ENABLED: "true"
+      DISCORD_WEBHOOK_URL: ${DISCORD_WEBHOOK_URL}
     volumes:
       - ./grafana/provisioning:/etc/grafana/provisioning
       - grafana_storage:/var/lib/grafana
@@ -73,6 +78,9 @@ services:
       POLL_AEMET_SECONDS: ${POLL_AEMET_SECONDS}
       CACHE_TTL_SECONDS: ${CACHE_TTL_SECONDS}
       CACHE_DIR: /app/cache
+
+      # Alertas
+      DISCORD_WEBHOOK_URL: ${DISCORD_WEBHOOK_URL}
     volumes:
       - ingestor_cache:/app/cache
     networks:
