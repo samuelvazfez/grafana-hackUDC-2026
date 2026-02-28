@@ -17,6 +17,8 @@ from fetchers.meteosix import fetch_meteosix
 from fetchers.aemet import fetch_aemet_observaciones, fetch_aemet_avisos
 from parsers.meteosix import parse_meteosix
 from parsers.aemet import parse_aemet_observaciones
+from fetchers.air import fetch_air_quality, fetch_forecast, fetch_pollen
+from parsers.air import parse_air_quality, parse_forecast, parse_pollen
 from iad import compute_iad_running
 
 logging.basicConfig(
@@ -114,6 +116,68 @@ def insert_aemet_obs(conn, rows):
     conn.commit()
     return inserted
 
+def insert_air_quality(conn, rows):
+    if not rows:
+        return 0
+    
+    vals = [
+        (r["time"], r["lat"], r["lon"], r.get("coord_index"), r["european_aqi"],
+         r["pm10"], r["pm2_5"], r["uv_index"])
+        for r in rows
+    ]
+    
+    _INSERT = """
+    INSERT INTO raw_air.quality
+        (time, lat, lon, coord_index, european_aqi, pm10, pm2_5, uv_index)
+    VALUES %s
+    """
+    with conn.cursor() as cur:
+        execute_values(cur, _INSERT, vals)
+    conn.commit()
+    return len(vals)
+
+
+def insert_forecast(conn, rows):
+    if not rows:
+        return 0
+    vals = [
+        (r["time"], r["lat"], r["lon"], r.get("coord_index"), r["temperature"],
+         r["apparent_temperature"], r["precipitation_probability"],
+         r["precipitation"], r["wind_speed"], r["wind_gusts"],
+         r["visibility"], r["cloud_cover"], r["is_day"])
+        for r in rows
+    ]
+    with conn.cursor() as cur:
+        execute_values(cur, """
+        INSERT INTO raw_air.forecast
+            (time, lat, lon, coord_index, temperature, apparent_temperature,
+             precipitation_probability, precipitation, wind_speed,
+             wind_gusts, visibility, cloud_cover, is_day)
+        VALUES %s
+        """, vals)
+    conn.commit()
+    return len(vals)
+
+
+def insert_pollen(conn, rows):
+    if not rows:
+        return 0
+    vals = [
+        (r["time"], r["lat"], r["lon"], r.get("coord_index"), r["grass_pollen"],
+         r["birch_pollen"], r["olive_pollen"],
+         r["alder_pollen"], r["ragweed_pollen"])
+        for r in rows
+    ]
+    with conn.cursor() as cur:
+        execute_values(cur, """
+        INSERT INTO raw_air.pollen
+            (time, lat, lon, coord_index, grass_pollen, birch_pollen,
+             olive_pollen, alder_pollen, ragweed_pollen)
+        VALUES %s
+        """, vals)
+    conn.commit()
+    return len(vals)
+
 
 # ── Ciclos de ingesta ─────────────────────────────────────────────────────────
 
@@ -144,9 +208,26 @@ def ingest_aemet():
         n = insert_aemet_obs(conn, obs_rows)
     log.info("[AEMET] %d observaciones insertadas", n)
 
-    # Avisos (por ahora solo log)
     avisos = fetch_aemet_avisos()
     log.info("[AEMET] %d avisos recibidos", len(avisos) if avisos else 0)
+
+def ingest_air():
+    """Fetch AQI + Forecast + Pollen -> parse -> insert."""
+    # AQI
+    raw_aqi = fetch_air_quality()
+    aqi_rows = parse_air_quality(raw_aqi)
+    # Forecast
+    raw_fc = fetch_forecast()
+    fc_rows = parse_forecast(raw_fc)
+    # Pollen
+    raw_pol = fetch_pollen()
+    pol_rows = parse_pollen(raw_pol)
+    
+    with get_conn() as conn:
+        n_a = insert_air_quality(conn, aqi_rows)
+        n_f = insert_forecast(conn, fc_rows)
+        n_p = insert_pollen(conn, pol_rows)
+    log.info("[Open-Meteo] AQI=%d, Forecast=%d, Pollen=%d insertados", n_a, n_f, n_p)
 
 
 # ── Main loop ─────────────────────────────────────────────────────────────────
@@ -166,6 +247,7 @@ def main():
 
     last_meteosix = 0
     last_aemet = 0
+    last_air = 0
 
     while True:
         now = time.time()
@@ -185,6 +267,14 @@ def main():
             except Exception:
                 log.exception("Error en ingesta AEMET")
             last_aemet = time.time()
+            
+        # Open-Meteo Air Quality
+        if now - last_air >= POLL_AEMET_SECONDS:
+            try:
+                ingest_air()
+            except Exception:
+                log.exception("Error en ingesta Calidad del Aire")
+            last_air = time.time()
 
         # Dormir 60s entre comprobaciones
         time.sleep(60)

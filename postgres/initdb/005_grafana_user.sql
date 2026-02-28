@@ -21,6 +21,7 @@ GRANT USAGE ON SCHEMA raw_aemet TO grafanareader;
 GRANT SELECT ON ALL TABLES IN SCHEMA raw_aemet TO grafanareader;
 ALTER DEFAULT PRIVILEGES IN SCHEMA raw_aemet GRANT SELECT ON TABLES TO grafanareader;
 
+
 -- Esquema raw_air
 GRANT USAGE ON SCHEMA raw_air TO grafanareader;
 GRANT SELECT ON ALL TABLES IN SCHEMA raw_air TO grafanareader;

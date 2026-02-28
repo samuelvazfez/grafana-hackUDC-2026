@@ -52,7 +52,7 @@ services:
       # DB
       PGHOST: postgres
       PGPORT: 5432
-      PGDATABASE: ${POSTGRES_DB}
+      PGDATABASE: observability
       PGUSER: ${POSTGRES_USER}
       PGPASSWORD: ${POSTGRES_PASSWORD}
 
