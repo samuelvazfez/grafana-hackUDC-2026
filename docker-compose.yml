@@ -64,13 +64,17 @@ services:
       METEOSIX_LANG: ${METEOSIX_LANG}
       METEOSIX_COORDS: ${METEOSIX_COORDS}
 
+      # AEMET
+      AEMET_API_KEY: ${AEMET_API_KEY}
+      AEMET_BASE_URL: ${AEMET_BASE_URL}
+
       # Scheduler + caché
       POLL_SECONDS: ${POLL_SECONDS}
+      POLL_AEMET_SECONDS: ${POLL_AEMET_SECONDS}
       CACHE_TTL_SECONDS: ${CACHE_TTL_SECONDS}
       CACHE_DIR: /app/cache
     volumes:
       - ingestor_cache:/app/cache
-      - ./ingestor/app.py:/app/app.py
     networks:
       - app_net
 volumes:

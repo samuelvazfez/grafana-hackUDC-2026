@@ -1,0 +1,773 @@
+{
+    "annotations": {
+        "list": []
+    },
+    "editable": true,
+    "fiscalYearStartMonth": 0,
+    "graphTooltip": 1,
+    "id": null,
+    "links": [],
+    "panels": [
+        {
+            "id": 1,
+            "title": "🏃 IAD Running — Ahora mismo",
+            "description": "Índice de Aptitud Deportiva actual para correr (0-10)",
+            "type": "gauge",
+            "gridPos": {
+                "h": 8,
+                "w": 6,
+                "x": 0,
+                "y": 0
+            },
+            "datasource": {
+                "type": "postgres",
+                "uid": "timescaledb"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "red",
+                                "value": null
+                            },
+                            {
+                                "color": "orange",
+                                "value": 3
+                            },
+                            {
+                                "color": "yellow",
+                                "value": 5
+                            },
+                            {
+                                "color": "light-green",
+                                "value": 7
+                            },
+                            {
+                                "color": "green",
+                                "value": 8.5
+                            }
+                        ]
+                    },
+                    "min": 0,
+                    "max": 10,
+                    "unit": "none",
+                    "decimals": 1
+                },
+                "overrides": []
+            },
+            "options": {
+                "reduceOptions": {
+                    "calcs": [
+                        "lastNotNull"
+                    ],
+                    "fields": "",
+                    "values": false
+                },
+                "showThresholdLabels": false,
+                "showThresholdMarkers": true,
+                "orientation": "auto"
+            },
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "postgres",
+                        "uid": "timescaledb"
+                    },
+                    "editorMode": "code",
+                    "format": "table",
+                    "rawQuery": true,
+                    "rawSql": "SELECT time, score as \"IAD Score\" FROM meteogalicia.iad_running WHERE coord_index = ${zona} AND time >= NOW() ORDER BY time ASC LIMIT 1",
+                    "refId": "A"
+                }
+            ]
+        },
+        {
+            "id": 2,
+            "title": "📊 Etiqueta IAD",
+            "description": "Recomendación actual para correr",
+            "type": "stat",
+            "gridPos": {
+                "h": 4,
+                "w": 6,
+                "x": 6,
+                "y": 0
+            },
+            "datasource": {
+                "type": "postgres",
+                "uid": "timescaledb"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "mappings": [
+                        {
+                            "options": {
+                                "Perfecto": {
+                                    "color": "green",
+                                    "index": 0,
+                                    "text": "🟢 Perfecto"
+                                }
+                            },
+                            "type": "value"
+                        },
+                        {
+                            "options": {
+                                "Bueno": {
+                                    "color": "light-green",
+                                    "index": 1,
+                                    "text": "🟢 Bueno"
+                                }
+                            },
+                            "type": "value"
+                        },
+                        {
+                            "options": {
+                                "Aceptable": {
+                                    "color": "yellow",
+                                    "index": 2,
+                                    "text": "🟡 Aceptable"
+                                }
+                            },
+                            "type": "value"
+                        },
+                        {
+                            "options": {
+                                "Malo": {
+                                    "color": "orange",
+                                    "index": 3,
+                                    "text": "🟠 Malo"
+                                }
+                            },
+                            "type": "value"
+                        },
+                        {
+                            "options": {
+                                "No recomendado": {
+                                    "color": "red",
+                                    "index": 4,
+                                    "text": "🔴 No recomendado"
+                                }
+                            },
+                            "type": "value"
+                        }
+                    ],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "text",
+                                "value": null
+                            }
+                        ]
+                    }
+                },
+                "overrides": []
+            },
+            "options": {
+                "reduceOptions": {
+                    "calcs": [
+                        "lastNotNull"
+                    ],
+                    "fields": "",
+                    "values": false
+                },
+                "colorMode": "value",
+                "graphMode": "none",
+                "justifyMode": "center",
+                "textMode": "value",
+                "orientation": "auto"
+            },
+            "targets": [
+                {
+                    "editorMode": "code",
+                    "format": "table",
+                    "rawQuery": true,
+                    "rawSql": "SELECT time, label FROM meteogalicia.iad_running WHERE coord_index = ${zona} AND time >= NOW() ORDER BY time ASC LIMIT 1",
+                    "refId": "A"
+                }
+            ]
+        },
+        {
+            "id": 3,
+            "title": "🌡️ Condiciones actuales",
+            "description": "Temperatura, viento y precipitación para la zona seleccionada",
+            "type": "stat",
+            "gridPos": {
+                "h": 4,
+                "w": 6,
+                "x": 6,
+                "y": 4
+            },
+            "datasource": {
+                "type": "postgres",
+                "uid": "timescaledb"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "decimals": 1
+                },
+                "overrides": [
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "Temp °C"
+                        },
+                        "properties": [
+                            {
+                                "id": "unit",
+                                "value": "celsius"
+                            },
+                            {
+                                "id": "color",
+                                "value": {
+                                    "fixedColor": "orange",
+                                    "mode": "fixed"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "Viento km/h"
+                        },
+                        "properties": [
+                            {
+                                "id": "unit",
+                                "value": "velocitykmh"
+                            },
+                            {
+                                "id": "color",
+                                "value": {
+                                    "fixedColor": "blue",
+                                    "mode": "fixed"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "Lluvia mm"
+                        },
+                        "properties": [
+                            {
+                                "id": "unit",
+                                "value": "lengthmm"
+                            },
+                            {
+                                "id": "color",
+                                "value": {
+                                    "fixedColor": "dark-blue",
+                                    "mode": "fixed"
+                                }
+                            }
+                        ]
+                    }
+                ]
+            },
+            "options": {
+                "reduceOptions": {
+                    "calcs": [
+                        "lastNotNull"
+                    ],
+                    "fields": "",
+                    "values": false
+                },
+                "colorMode": "value",
+                "graphMode": "none",
+                "justifyMode": "auto",
+                "textMode": "auto",
+                "orientation": "horizontal"
+            },
+            "targets": [
+                {
+                    "editorMode": "code",
+                    "format": "table",
+                    "rawQuery": true,
+                    "rawSql": "SELECT time, temperature as \"Temp °C\", wind_speed as \"Viento km/h\", precipitation as \"Lluvia mm\" FROM meteogalicia.weather_hourly WHERE coord_index = ${zona} AND time >= NOW() ORDER BY time ASC LIMIT 1",
+                    "refId": "A"
+                }
+            ]
+        },
+        {
+            "id": 4,
+            "title": "📈 IAD Running — Previsión",
+            "description": "Evolución del IAD para los próximos días",
+            "type": "timeseries",
+            "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 12,
+                "y": 0
+            },
+            "datasource": {
+                "type": "postgres",
+                "uid": ""
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "custom": {
+                        "lineWidth": 2,
+                        "fillOpacity": 15,
+                        "gradientMode": "scheme",
+                        "spanNulls": true,
+                        "pointSize": 5,
+                        "showPoints": "auto"
+                    },
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "red",
+                                "value": null
+                            },
+                            {
+                                "color": "orange",
+                                "value": 3
+                            },
+                            {
+                                "color": "yellow",
+                                "value": 5
+                            },
+                            {
+                                "color": "light-green",
+                                "value": 7
+                            },
+                            {
+                                "color": "green",
+                                "value": 8.5
+                            }
+                        ]
+                    },
+                    "min": 0,
+                    "max": 10,
+                    "color": {
+                        "mode": "continuous-GrYlRd"
+                    }
+                },
+                "overrides": []
+            },
+            "options": {
+                "tooltip": {
+                    "mode": "multi",
+                    "sort": "desc"
+                },
+                "legend": {
+                    "displayMode": "list",
+                    "placement": "bottom"
+                }
+            },
+            "targets": [
+                {
+                    "editorMode": "code",
+                    "format": "time_series",
+                    "rawQuery": true,
+                    "rawSql": "SELECT time as \"time\", score as \"IAD Score\" FROM meteogalicia.iad_running WHERE coord_index = ${zona} ORDER BY time ASC",
+                    "refId": "A"
+                }
+            ]
+        },
+        {
+            "id": 5,
+            "title": "🌡️ Temperatura — Previsión",
+            "type": "timeseries",
+            "gridPos": {
+                "h": 7,
+                "w": 8,
+                "x": 0,
+                "y": 8
+            },
+            "datasource": {
+                "type": "postgres",
+                "uid": ""
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "custom": {
+                        "lineWidth": 2,
+                        "fillOpacity": 10,
+                        "gradientMode": "scheme",
+                        "spanNulls": true
+                    },
+                    "unit": "celsius",
+                    "color": {
+                        "mode": "continuous-YlRd"
+                    }
+                },
+                "overrides": []
+            },
+            "options": {
+                "tooltip": {
+                    "mode": "single"
+                },
+                "legend": {
+                    "displayMode": "list",
+                    "placement": "bottom"
+                }
+            },
+            "targets": [
+                {
+                    "editorMode": "code",
+                    "format": "time_series",
+                    "rawQuery": true,
+                    "rawSql": "SELECT time as \"time\", temperature as \"Temperatura\" FROM meteogalicia.weather_hourly WHERE coord_index = ${zona} ORDER BY time ASC",
+                    "refId": "A"
+                }
+            ]
+        },
+        {
+            "id": 6,
+            "title": "💨 Viento — Previsión",
+            "type": "timeseries",
+            "gridPos": {
+                "h": 7,
+                "w": 8,
+                "x": 8,
+                "y": 8
+            },
+            "datasource": {
+                "type": "postgres",
+                "uid": ""
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "custom": {
+                        "lineWidth": 2,
+                        "fillOpacity": 10,
+                        "gradientMode": "scheme",
+                        "spanNulls": true
+                    },
+                    "unit": "velocitykmh",
+                    "color": {
+                        "mode": "continuous-blues"
+                    }
+                },
+                "overrides": []
+            },
+            "targets": [
+                {
+                    "editorMode": "code",
+                    "format": "time_series",
+                    "rawQuery": true,
+                    "rawSql": "SELECT time as \"time\", wind_speed as \"Velocidad viento\" FROM meteogalicia.weather_hourly WHERE coord_index = ${zona} ORDER BY time ASC",
+                    "refId": "A"
+                }
+            ]
+        },
+        {
+            "id": 7,
+            "title": "🌧️ Precipitación — Previsión",
+            "type": "barchart",
+            "gridPos": {
+                "h": 7,
+                "w": 8,
+                "x": 16,
+                "y": 8
+            },
+            "datasource": {
+                "type": "postgres",
+                "uid": ""
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "unit": "lengthmm",
+                    "color": {
+                        "mode": "continuous-blues"
+                    },
+                    "custom": {
+                        "fillOpacity": 80,
+                        "gradientMode": "scheme"
+                    }
+                },
+                "overrides": []
+            },
+            "targets": [
+                {
+                    "editorMode": "code",
+                    "format": "time_series",
+                    "rawQuery": true,
+                    "rawSql": "SELECT time as \"time\", precipitation as \"Precipitación\" FROM meteogalicia.weather_hourly WHERE coord_index = ${zona} ORDER BY time ASC",
+                    "refId": "A"
+                }
+            ]
+        },
+        {
+            "id": 8,
+            "title": "🗺️ Comparativa IAD — Todas las zonas (próxima hora)",
+            "description": "IAD actual por zona geográfica",
+            "type": "bargauge",
+            "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 0,
+                "y": 15
+            },
+            "datasource": {
+                "type": "postgres",
+                "uid": ""
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "red",
+                                "value": null
+                            },
+                            {
+                                "color": "orange",
+                                "value": 3
+                            },
+                            {
+                                "color": "yellow",
+                                "value": 5
+                            },
+                            {
+                                "color": "light-green",
+                                "value": 7
+                            },
+                            {
+                                "color": "green",
+                                "value": 8.5
+                            }
+                        ]
+                    },
+                    "min": 0,
+                    "max": 10,
+                    "decimals": 1
+                },
+                "overrides": []
+            },
+            "options": {
+                "reduceOptions": {
+                    "calcs": [
+                        "lastNotNull"
+                    ],
+                    "fields": "",
+                    "values": true
+                },
+                "displayMode": "gradient",
+                "orientation": "horizontal",
+                "showUnfilled": true,
+                "valueMode": "text"
+            },
+            "targets": [
+                {
+                    "editorMode": "code",
+                    "format": "table",
+                    "rawQuery": true,
+                    "rawSql": "SELECT CASE coord_index WHEN 0 THEN 'A Coruña' WHEN 1 THEN 'Santiago' WHEN 2 THEN 'Vigo' WHEN 3 THEN 'Lugo' WHEN 4 THEN 'Ourense' WHEN 5 THEN 'Pontevedra' END as zona, score FROM meteogalicia.iad_running WHERE time = (SELECT MIN(time) FROM meteogalicia.iad_running WHERE time >= NOW()) ORDER BY score DESC",
+                    "refId": "A"
+                }
+            ]
+        },
+        {
+            "id": 9,
+            "title": "📋 Previsión detallada — Próximas horas",
+            "type": "table",
+            "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 12,
+                "y": 15
+            },
+            "datasource": {
+                "type": "postgres",
+                "uid": ""
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "decimals": 1
+                },
+                "overrides": [
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "score"
+                        },
+                        "properties": [
+                            {
+                                "id": "custom.cellOptions",
+                                "value": {
+                                    "mode": "gradient",
+                                    "type": "gauge"
+                                }
+                            },
+                            {
+                                "id": "min",
+                                "value": 0
+                            },
+                            {
+                                "id": "max",
+                                "value": 10
+                            },
+                            {
+                                "id": "thresholds",
+                                "value": {
+                                    "mode": "absolute",
+                                    "steps": [
+                                        {
+                                            "color": "red",
+                                            "value": null
+                                        },
+                                        {
+                                            "color": "orange",
+                                            "value": 3
+                                        },
+                                        {
+                                            "color": "yellow",
+                                            "value": 5
+                                        },
+                                        {
+                                            "color": "green",
+                                            "value": 7
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "sky_state"
+                        },
+                        "properties": [
+                            {
+                                "id": "mappings",
+                                "value": [
+                                    {
+                                        "options": {
+                                            "CLEAR": {
+                                                "text": "☀️ Despejado"
+                                            },
+                                            "PARTLY_CLOUDY": {
+                                                "text": "⛅ Parcial"
+                                            },
+                                            "CLOUDY": {
+                                                "text": "☁️ Nublado"
+                                            },
+                                            "OVERCAST": {
+                                                "text": "🌥️ Cubierto"
+                                            },
+                                            "RAIN": {
+                                                "text": "🌧️ Lluvia"
+                                            },
+                                            "DRIZZLE": {
+                                                "text": "🌦️ Llovizna"
+                                            },
+                                            "STORM": {
+                                                "text": "⛈️ Tormenta"
+                                            },
+                                            "FOG": {
+                                                "text": "🌫️ Niebla"
+                                            },
+                                            "SNOW": {
+                                                "text": "❄️ Nieve"
+                                            },
+                                            "HIGH_CLOUDS": {
+                                                "text": "🌤️ Nubes altas"
+                                            }
+                                        },
+                                        "type": "value"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            "options": {
+                "showHeader": true,
+                "sortBy": [
+                    {
+                        "displayName": "time",
+                        "desc": false
+                    }
+                ],
+                "footer": {
+                    "show": false
+                }
+            },
+            "targets": [
+                {
+                    "editorMode": "code",
+                    "format": "table",
+                    "rawQuery": true,
+                    "rawSql": "SELECT r.time, r.score, r.label, w.temperature, w.wind_speed, w.precipitation, w.sky_state FROM meteogalicia.iad_running r JOIN meteogalicia.weather_hourly w ON r.time = w.time AND r.coord_index = w.coord_index WHERE r.coord_index = ${zona} AND r.time >= NOW() ORDER BY r.time ASC LIMIT 24",
+                    "refId": "A"
+                }
+            ]
+        }
+    ],
+    "refresh": "5m",
+    "schemaVersion": 39,
+    "tags": [
+        "iad",
+        "running",
+        "meteogalicia"
+    ],
+    "templating": {
+        "list": [
+            {
+                "current": {
+                    "selected": false,
+                    "text": "A Coruña",
+                    "value": "0"
+                },
+                "description": "Zona geográfica",
+                "hide": 0,
+                "includeAll": false,
+                "label": "Zona",
+                "multi": false,
+                "name": "zona",
+                "options": [
+                    {
+                        "selected": true,
+                        "text": "A Coruña",
+                        "value": "0"
+                    },
+                    {
+                        "selected": false,
+                        "text": "Santiago",
+                        "value": "1"
+                    },
+                    {
+                        "selected": false,
+                        "text": "Vigo",
+                        "value": "2"
+                    },
+                    {
+                        "selected": false,
+                        "text": "Lugo",
+                        "value": "3"
+                    },
+                    {
+                        "selected": false,
+                        "text": "Ourense",
+                        "value": "4"
+                    },
+                    {
+                        "selected": false,
+                        "text": "Pontevedra",
+                        "value": "5"
+                    }
+                ],
+                "query": "",
+                "type": "custom"
+            }
+        ]
+    },
+    "time": {
+        "from": "now",
+        "to": "now+5d"
+    },
+    "timepicker": {},
+    "timezone": "Europe/Madrid",
+    "title": "🏃 IAD Running — Galicia",
+    "uid": "iad-running-galicia",
+    "version": 1
+}

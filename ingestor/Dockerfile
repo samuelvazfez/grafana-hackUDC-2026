@@ -2,14 +2,18 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Instalar dependencias (una vez, en build)
-COPY requirements.txt /app/requirements.txt
-RUN pip install --no-cache-dir -r /app/requirements.txt
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Copiar el código
-COPY app.py /app/app.py
+# Copiar todo el código (modular)
+COPY config.py cache.py db.py iad.py app.py ./
+COPY fetchers/ ./fetchers/
+COPY parsers/ ./parsers/
 
-# Cache dir
 RUN mkdir -p /app/cache
+
+# Usuario no-root
+RUN useradd -r appuser && chown -R appuser /app
+USER appuser
 
 CMD ["python", "/app/app.py"]
