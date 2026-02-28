@@ -3,21 +3,34 @@
         "list": []
     },
     "editable": true,
-    "fiscalYearStartMonth": 0,
     "graphTooltip": 1,
     "id": null,
     "links": [],
     "panels": [
         {
-            "id": 1,
-            "title": "🏃 IAD Running — Ahora mismo",
-            "description": "Índice de Aptitud Deportiva actual para correr (0-10)",
-            "type": "gauge",
+            "id": 10,
+            "title": "",
+            "type": "text",
             "gridPos": {
-                "h": 8,
-                "w": 6,
+                "h": 2,
+                "w": 24,
                 "x": 0,
                 "y": 0
+            },
+            "options": {
+                "mode": "markdown",
+                "content": "# 🏅 ¿Dónde entreno hoy en Galicia?\nDatos meteorológicos en tiempo real de MeteoSIX · Actualizado cada 6h · Previsión 5 días"
+            }
+        },
+        {
+            "id": 1,
+            "title": "🏃 IAD Actual",
+            "type": "gauge",
+            "gridPos": {
+                "h": 7,
+                "w": 5,
+                "x": 0,
+                "y": 2
             },
             "datasource": {
                 "type": "postgres",
@@ -52,7 +65,6 @@
                     },
                     "min": 0,
                     "max": 10,
-                    "unit": "none",
                     "decimals": 1
                 },
                 "overrides": []
@@ -66,8 +78,7 @@
                     "values": false
                 },
                 "showThresholdLabels": false,
-                "showThresholdMarkers": true,
-                "orientation": "auto"
+                "showThresholdMarkers": true
             },
             "targets": [
                 {
@@ -78,21 +89,20 @@
                     "editorMode": "code",
                     "format": "table",
                     "rawQuery": true,
-                    "rawSql": "SELECT DISTINCT ON (coord_index) time, score as \"IAD Score\" FROM meteogalicia.iad_running WHERE coord_index = ${zona} AND time >= NOW() ORDER BY coord_index, time ASC",
+                    "rawSql": "SELECT DISTINCT ON (coord_index) time, score as \"IAD Score\" FROM meteogalicia.iad_scores WHERE coord_index = ${zona} AND sport = '${deporte}' AND time >= NOW() ORDER BY coord_index, time ASC",
                     "refId": "A"
                 }
             ]
         },
         {
             "id": 2,
-            "title": "📊 Etiqueta IAD",
-            "description": "Recomendación actual para correr",
+            "title": "📊 Recomendación",
             "type": "stat",
             "gridPos": {
-                "h": 4,
-                "w": 6,
-                "x": 6,
-                "y": 0
+                "h": 3,
+                "w": 7,
+                "x": 5,
+                "y": 2
             },
             "datasource": {
                 "type": "postgres",
@@ -106,7 +116,7 @@
                                 "Perfecto": {
                                     "color": "green",
                                     "index": 0,
-                                    "text": "🟢 Perfecto"
+                                    "text": "🟢 ¡Perfecto para salir!"
                                 }
                             },
                             "type": "value"
@@ -116,7 +126,7 @@
                                 "Bueno": {
                                     "color": "light-green",
                                     "index": 1,
-                                    "text": "🟢 Bueno"
+                                    "text": "🟢 Buenas condiciones"
                                 }
                             },
                             "type": "value"
@@ -126,7 +136,7 @@
                                 "Aceptable": {
                                     "color": "yellow",
                                     "index": 2,
-                                    "text": "🟡 Aceptable"
+                                    "text": "🟡 Aceptable, con precaución"
                                 }
                             },
                             "type": "value"
@@ -136,7 +146,7 @@
                                 "Malo": {
                                     "color": "orange",
                                     "index": 3,
-                                    "text": "🟠 Malo"
+                                    "text": "🟠 Mejor quédate en casa"
                                 }
                             },
                             "type": "value"
@@ -146,7 +156,7 @@
                                 "No recomendado": {
                                     "color": "red",
                                     "index": 4,
-                                    "text": "🔴 No recomendado"
+                                    "text": "🔴 ¡No salgas!"
                                 }
                             },
                             "type": "value"
@@ -175,8 +185,7 @@
                 "colorMode": "value",
                 "graphMode": "none",
                 "justifyMode": "center",
-                "textMode": "value",
-                "orientation": "auto"
+                "textMode": "value"
             },
             "targets": [
                 {
@@ -187,21 +196,20 @@
                     "editorMode": "code",
                     "format": "table",
                     "rawQuery": true,
-                    "rawSql": "SELECT DISTINCT ON (coord_index) time, label FROM meteogalicia.iad_scores WHERE coord_index = ${zona} AND sport = 'running' AND time >= NOW() ORDER BY coord_index, time ASC",
+                    "rawSql": "SELECT DISTINCT ON (coord_index) time, label FROM meteogalicia.iad_scores WHERE coord_index = ${zona} AND sport = '${deporte}' AND time >= NOW() ORDER BY coord_index, time ASC",
                     "refId": "A"
                 }
             ]
         },
         {
             "id": 3,
-            "title": "🌡️ Condiciones actuales",
-            "description": "Temperatura, viento y precipitación para la zona seleccionada",
+            "title": "🌡️ Ahora mismo",
             "type": "stat",
             "gridPos": {
                 "h": 4,
-                "w": 6,
-                "x": 6,
-                "y": 4
+                "w": 7,
+                "x": 5,
+                "y": 5
             },
             "datasource": {
                 "type": "postgres",
@@ -215,7 +223,7 @@
                     {
                         "matcher": {
                             "id": "byName",
-                            "options": "Temp °C"
+                            "options": "🌡️ Temp"
                         },
                         "properties": [
                             {
@@ -234,7 +242,7 @@
                     {
                         "matcher": {
                             "id": "byName",
-                            "options": "Viento km/h"
+                            "options": "💨 Viento"
                         },
                         "properties": [
                             {
@@ -253,7 +261,7 @@
                     {
                         "matcher": {
                             "id": "byName",
-                            "options": "Lluvia mm"
+                            "options": "🌧️ Lluvia"
                         },
                         "properties": [
                             {
@@ -294,21 +302,20 @@
                     "editorMode": "code",
                     "format": "table",
                     "rawQuery": true,
-                    "rawSql": "SELECT DISTINCT ON (coord_index) time, temperature as \"Temp °C\", wind_speed as \"Viento km/h\", precipitation as \"Lluvia mm\" FROM meteogalicia.weather_hourly WHERE coord_index = ${zona} AND time >= NOW() ORDER BY coord_index, time ASC",
+                    "rawSql": "SELECT DISTINCT ON (coord_index) time, temperature as \"🌡️ Temp\", wind_speed as \"💨 Viento\", precipitation as \"🌧️ Lluvia\" FROM meteogalicia.weather_hourly WHERE coord_index = ${zona} AND time >= NOW() ORDER BY coord_index, time ASC",
                     "refId": "A"
                 }
             ]
         },
         {
             "id": 4,
-            "title": "📈 IAD Running — Previsión",
-            "description": "Evolución del IAD para los próximos días",
+            "title": "📈 IAD — Previsión próximos días",
             "type": "timeseries",
             "gridPos": {
-                "h": 8,
+                "h": 7,
                 "w": 12,
                 "x": 12,
-                "y": 0
+                "y": 2
             },
             "datasource": {
                 "type": "postgres",
@@ -321,7 +328,7 @@
                         "fillOpacity": 15,
                         "gradientMode": "scheme",
                         "spanNulls": true,
-                        "pointSize": 5,
+                        "pointSize": 4,
                         "showPoints": "auto"
                     },
                     "thresholds": {
@@ -376,20 +383,21 @@
                     "editorMode": "code",
                     "format": "time_series",
                     "rawQuery": true,
-                    "rawSql": "SELECT DISTINCT ON (time) time as \"time\", score as \"IAD Score\" FROM meteogalicia.iad_running WHERE coord_index = ${zona} ORDER BY time ASC",
+                    "rawSql": "SELECT DISTINCT ON (time) time as \"time\", score as \"IAD Score\" FROM meteogalicia.iad_scores WHERE coord_index = ${zona} AND sport = '${deporte}' ORDER BY time ASC",
                     "refId": "A"
                 }
             ]
         },
         {
             "id": 5,
-            "title": "🌡️ Temperatura — Previsión",
-            "type": "timeseries",
+            "title": "🏆 Mejor deporte por zona — Ahora",
+            "description": "¿Qué deporte conviene más en cada ciudad?",
+            "type": "table",
             "gridPos": {
-                "h": 7,
-                "w": 8,
+                "h": 8,
+                "w": 12,
                 "x": 0,
-                "y": 8
+                "y": 9
             },
             "datasource": {
                 "type": "postgres",
@@ -397,26 +405,177 @@
             },
             "fieldConfig": {
                 "defaults": {
-                    "custom": {
-                        "lineWidth": 2,
-                        "fillOpacity": 10,
-                        "gradientMode": "scheme",
-                        "spanNulls": true
-                    },
-                    "unit": "celsius",
-                    "color": {
-                        "mode": "continuous-YlRd"
-                    }
+                    "decimals": 1
                 },
-                "overrides": []
+                "overrides": [
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "🏃"
+                        },
+                        "properties": [
+                            {
+                                "id": "custom.cellOptions",
+                                "value": {
+                                    "mode": "gradient",
+                                    "type": "gauge"
+                                }
+                            },
+                            {
+                                "id": "min",
+                                "value": 0
+                            },
+                            {
+                                "id": "max",
+                                "value": 10
+                            },
+                            {
+                                "id": "thresholds",
+                                "value": {
+                                    "mode": "absolute",
+                                    "steps": [
+                                        {
+                                            "color": "red",
+                                            "value": null
+                                        },
+                                        {
+                                            "color": "orange",
+                                            "value": 3
+                                        },
+                                        {
+                                            "color": "yellow",
+                                            "value": 5
+                                        },
+                                        {
+                                            "color": "green",
+                                            "value": 7
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "🚴"
+                        },
+                        "properties": [
+                            {
+                                "id": "custom.cellOptions",
+                                "value": {
+                                    "mode": "gradient",
+                                    "type": "gauge"
+                                }
+                            },
+                            {
+                                "id": "min",
+                                "value": 0
+                            },
+                            {
+                                "id": "max",
+                                "value": 10
+                            },
+                            {
+                                "id": "thresholds",
+                                "value": {
+                                    "mode": "absolute",
+                                    "steps": [
+                                        {
+                                            "color": "red",
+                                            "value": null
+                                        },
+                                        {
+                                            "color": "orange",
+                                            "value": 3
+                                        },
+                                        {
+                                            "color": "yellow",
+                                            "value": 5
+                                        },
+                                        {
+                                            "color": "green",
+                                            "value": 7
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "🚵"
+                        },
+                        "properties": [
+                            {
+                                "id": "custom.cellOptions",
+                                "value": {
+                                    "mode": "gradient",
+                                    "type": "gauge"
+                                }
+                            },
+                            {
+                                "id": "min",
+                                "value": 0
+                            },
+                            {
+                                "id": "max",
+                                "value": 10
+                            },
+                            {
+                                "id": "thresholds",
+                                "value": {
+                                    "mode": "absolute",
+                                    "steps": [
+                                        {
+                                            "color": "red",
+                                            "value": null
+                                        },
+                                        {
+                                            "color": "orange",
+                                            "value": 3
+                                        },
+                                        {
+                                            "color": "yellow",
+                                            "value": 5
+                                        },
+                                        {
+                                            "color": "green",
+                                            "value": 7
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "⭐ Mejor"
+                        },
+                        "properties": [
+                            {
+                                "id": "custom.cellOptions",
+                                "value": {
+                                    "type": "color-text"
+                                }
+                            },
+                            {
+                                "id": "color",
+                                "value": {
+                                    "fixedColor": "green",
+                                    "mode": "fixed"
+                                }
+                            }
+                        ]
+                    }
+                ]
             },
             "options": {
-                "tooltip": {
-                    "mode": "single"
-                },
-                "legend": {
-                    "displayMode": "list",
-                    "placement": "bottom"
+                "showHeader": true,
+                "footer": {
+                    "show": false
                 }
             },
             "targets": [
@@ -426,107 +585,23 @@
                         "uid": "timescaledb"
                     },
                     "editorMode": "code",
-                    "format": "time_series",
+                    "format": "table",
                     "rawQuery": true,
-                    "rawSql": "SELECT DISTINCT ON (time) time as \"time\", temperature as \"Temperatura\" FROM meteogalicia.weather_hourly WHERE coord_index = ${zona} ORDER BY time ASC",
+                    "rawSql": "SELECT CASE coord_index WHEN 0 THEN 'A Coruña' WHEN 1 THEN 'Santiago' WHEN 2 THEN 'Vigo' WHEN 3 THEN 'Lugo' WHEN 4 THEN 'Ourense' WHEN 5 THEN 'Pontevedra' END as \"Zona\", MAX(CASE WHEN sport='running' THEN score END) as \"🏃\", MAX(CASE WHEN sport='cycling' THEN score END) as \"🚴\", MAX(CASE WHEN sport='mtb' THEN score END) as \"🚵\", CASE (array_agg(sport ORDER BY score DESC))[1] WHEN 'running' THEN '🏃 Running' WHEN 'cycling' THEN '🚴 Ciclismo' WHEN 'mtb' THEN '🚵 MTB' END as \"⭐ Mejor\" FROM (SELECT DISTINCT ON (coord_index, sport) coord_index, sport, score FROM meteogalicia.iad_scores WHERE time >= NOW() ORDER BY coord_index, sport, time ASC, ts_ingested DESC) scores GROUP BY coord_index ORDER BY coord_index",
                     "refId": "A"
                 }
             ]
         },
         {
             "id": 6,
-            "title": "💨 Viento — Previsión",
-            "type": "timeseries",
-            "gridPos": {
-                "h": 7,
-                "w": 8,
-                "x": 8,
-                "y": 8
-            },
-            "datasource": {
-                "type": "postgres",
-                "uid": "timescaledb"
-            },
-            "fieldConfig": {
-                "defaults": {
-                    "custom": {
-                        "lineWidth": 2,
-                        "fillOpacity": 10,
-                        "gradientMode": "scheme",
-                        "spanNulls": true
-                    },
-                    "unit": "velocitykmh",
-                    "color": {
-                        "mode": "continuous-blues"
-                    }
-                },
-                "overrides": []
-            },
-            "targets": [
-                {
-                    "datasource": {
-                        "type": "postgres",
-                        "uid": "timescaledb"
-                    },
-                    "editorMode": "code",
-                    "format": "time_series",
-                    "rawQuery": true,
-                    "rawSql": "SELECT DISTINCT ON (time) time as \"time\", wind_speed as \"Velocidad viento\" FROM meteogalicia.weather_hourly WHERE coord_index = ${zona} ORDER BY time ASC",
-                    "refId": "A"
-                }
-            ]
-        },
-        {
-            "id": 7,
-            "title": "🌧️ Precipitación — Previsión",
-            "type": "barchart",
-            "gridPos": {
-                "h": 7,
-                "w": 8,
-                "x": 16,
-                "y": 8
-            },
-            "datasource": {
-                "type": "postgres",
-                "uid": "timescaledb"
-            },
-            "fieldConfig": {
-                "defaults": {
-                    "unit": "lengthmm",
-                    "color": {
-                        "mode": "continuous-blues"
-                    },
-                    "custom": {
-                        "fillOpacity": 80,
-                        "gradientMode": "scheme"
-                    }
-                },
-                "overrides": []
-            },
-            "targets": [
-                {
-                    "datasource": {
-                        "type": "postgres",
-                        "uid": "timescaledb"
-                    },
-                    "editorMode": "code",
-                    "format": "time_series",
-                    "rawQuery": true,
-                    "rawSql": "SELECT DISTINCT ON (time) time as \"time\", precipitation as \"Precipitación\" FROM meteogalicia.weather_hourly WHERE coord_index = ${zona} ORDER BY time ASC",
-                    "refId": "A"
-                }
-            ]
-        },
-        {
-            "id": 8,
-            "title": "🗺️ Comparativa IAD — Todas las zonas (próxima hora)",
-            "description": "IAD actual por zona geográfica",
+            "title": "📊 Ranking deportes — ${zona:text}",
+            "description": "Comparación de IAD entre deportes para la zona seleccionada",
             "type": "bargauge",
             "gridPos": {
                 "h": 8,
                 "w": 12,
-                "x": 0,
-                "y": 15
+                "x": 12,
+                "y": 9
             },
             "datasource": {
                 "type": "postgres",
@@ -587,20 +662,207 @@
                     "editorMode": "code",
                     "format": "table",
                     "rawQuery": true,
-                    "rawSql": "SELECT CASE r.coord_index WHEN 0 THEN 'A Coruña' WHEN 1 THEN 'Santiago' WHEN 2 THEN 'Vigo' WHEN 3 THEN 'Lugo' WHEN 4 THEN 'Ourense' WHEN 5 THEN 'Pontevedra' END as zona, r.score FROM (SELECT DISTINCT ON (coord_index) coord_index, score FROM meteogalicia.iad_scores WHERE sport = 'running' AND time >= NOW() ORDER BY coord_index, time ASC, ts_ingested DESC) r ORDER BY r.coord_index",
+                    "rawSql": "SELECT CASE sport WHEN 'running' THEN '🏃 Running' WHEN 'cycling' THEN '🚴 Ciclismo' WHEN 'mtb' THEN '🚵 MTB' END as deporte, score FROM (SELECT DISTINCT ON (sport) sport, score FROM meteogalicia.iad_scores WHERE coord_index = ${zona} AND time >= NOW() ORDER BY sport, time ASC, ts_ingested DESC) s",
+                    "refId": "A"
+                }
+            ]
+        },
+        {
+            "id": 7,
+            "title": "🌡️ Temperatura",
+            "type": "timeseries",
+            "gridPos": {
+                "h": 6,
+                "w": 8,
+                "x": 0,
+                "y": 17
+            },
+            "datasource": {
+                "type": "postgres",
+                "uid": "timescaledb"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "custom": {
+                        "lineWidth": 2,
+                        "fillOpacity": 10,
+                        "gradientMode": "scheme",
+                        "spanNulls": true
+                    },
+                    "unit": "celsius",
+                    "color": {
+                        "mode": "continuous-YlRd"
+                    }
+                },
+                "overrides": []
+            },
+            "options": {
+                "tooltip": {
+                    "mode": "single"
+                },
+                "legend": {
+                    "displayMode": "list",
+                    "placement": "bottom"
+                }
+            },
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "postgres",
+                        "uid": "timescaledb"
+                    },
+                    "editorMode": "code",
+                    "format": "time_series",
+                    "rawQuery": true,
+                    "rawSql": "SELECT DISTINCT ON (time) time as \"time\", temperature as \"Temperatura\" FROM meteogalicia.weather_hourly WHERE coord_index = ${zona} ORDER BY time ASC",
+                    "refId": "A"
+                }
+            ]
+        },
+        {
+            "id": 8,
+            "title": "💨 Viento",
+            "type": "timeseries",
+            "gridPos": {
+                "h": 6,
+                "w": 8,
+                "x": 8,
+                "y": 17
+            },
+            "datasource": {
+                "type": "postgres",
+                "uid": "timescaledb"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "custom": {
+                        "lineWidth": 2,
+                        "fillOpacity": 10,
+                        "gradientMode": "scheme",
+                        "spanNulls": true
+                    },
+                    "unit": "velocitykmh",
+                    "color": {
+                        "mode": "continuous-blues"
+                    }
+                },
+                "overrides": []
+            },
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "postgres",
+                        "uid": "timescaledb"
+                    },
+                    "editorMode": "code",
+                    "format": "time_series",
+                    "rawQuery": true,
+                    "rawSql": "SELECT DISTINCT ON (time) time as \"time\", wind_speed as \"Velocidad viento\" FROM meteogalicia.weather_hourly WHERE coord_index = ${zona} ORDER BY time ASC",
                     "refId": "A"
                 }
             ]
         },
         {
             "id": 9,
-            "title": "📋 Previsión detallada — Próximas horas",
+            "title": "🌧️ Precipitación",
+            "type": "barchart",
+            "gridPos": {
+                "h": 6,
+                "w": 8,
+                "x": 16,
+                "y": 17
+            },
+            "datasource": {
+                "type": "postgres",
+                "uid": "timescaledb"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "unit": "lengthmm",
+                    "color": {
+                        "mode": "continuous-blues"
+                    },
+                    "custom": {
+                        "fillOpacity": 80,
+                        "gradientMode": "scheme"
+                    }
+                },
+                "overrides": []
+            },
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "postgres",
+                        "uid": "timescaledb"
+                    },
+                    "editorMode": "code",
+                    "format": "time_series",
+                    "rawQuery": true,
+                    "rawSql": "SELECT DISTINCT ON (time) time as \"time\", precipitation as \"Precipitación\" FROM meteogalicia.weather_hourly WHERE coord_index = ${zona} ORDER BY time ASC",
+                    "refId": "A"
+                }
+            ]
+        },
+        {
+            "id": 11,
+            "title": "⏰ Próxima ventana óptima (IAD ≥ 8)",
+            "description": "¿Cuándo es el mejor momento para entrenar?",
+            "type": "stat",
+            "gridPos": {
+                "h": 4,
+                "w": 12,
+                "x": 0,
+                "y": 23
+            },
+            "datasource": {
+                "type": "postgres",
+                "uid": "timescaledb"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "fixedColor": "green",
+                        "mode": "fixed"
+                    }
+                },
+                "overrides": []
+            },
+            "options": {
+                "reduceOptions": {
+                    "calcs": [
+                        "lastNotNull"
+                    ],
+                    "fields": "/^ventana$/",
+                    "values": false
+                },
+                "colorMode": "value",
+                "graphMode": "none",
+                "justifyMode": "center",
+                "textMode": "value"
+            },
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "postgres",
+                        "uid": "timescaledb"
+                    },
+                    "editorMode": "code",
+                    "format": "table",
+                    "rawQuery": true,
+                    "rawSql": "SELECT DISTINCT ON (coord_index) time, TO_CHAR(time AT TIME ZONE 'Europe/Madrid', 'Dy DD Mon HH24:MI') || ' → IAD ' || ROUND(score,1) as ventana FROM meteogalicia.iad_scores WHERE coord_index = ${zona} AND sport = '${deporte}' AND time >= NOW() AND score >= 8 ORDER BY coord_index, time ASC",
+                    "refId": "A"
+                }
+            ]
+        },
+        {
+            "id": 12,
+            "title": "📋 Previsión detallada — ${zona:text}",
             "type": "table",
             "gridPos": {
                 "h": 8,
                 "w": 12,
                 "x": 12,
-                "y": 15
+                "y": 23
             },
             "datasource": {
                 "type": "postgres",
@@ -661,7 +923,7 @@
                     {
                         "matcher": {
                             "id": "byName",
-                            "options": "sky_state"
+                            "options": "cielo"
                         },
                         "properties": [
                             {
@@ -670,46 +932,46 @@
                                     {
                                         "options": {
                                             "CLEAR": {
-                                                "text": "☀️ Despejado"
+                                                "text": "☀️"
                                             },
                                             "SUNNY": {
-                                                "text": "☀️ Soleado"
-                                            },
-                                            "PARTLY_CLOUDY": {
-                                                "text": "⛅ Parcial"
-                                            },
-                                            "CLOUDY": {
-                                                "text": "☁️ Nublado"
-                                            },
-                                            "OVERCAST": {
-                                                "text": "🌥️ Cubierto"
+                                                "text": "☀️"
                                             },
                                             "HIGH_CLOUDS": {
-                                                "text": "🌤️ Nubes altas"
+                                                "text": "🌤️"
+                                            },
+                                            "PARTLY_CLOUDY": {
+                                                "text": "⛅"
+                                            },
+                                            "CLOUDY": {
+                                                "text": "☁️"
+                                            },
+                                            "OVERCAST": {
+                                                "text": "🌥️"
                                             },
                                             "RAIN": {
-                                                "text": "🌧️ Lluvia"
+                                                "text": "🌧️"
                                             },
                                             "DRIZZLE": {
-                                                "text": "🌦️ Llovizna"
+                                                "text": "🌦️"
                                             },
                                             "SHOWERS": {
-                                                "text": "🌧️ Chubascos"
+                                                "text": "🌧️"
                                             },
                                             "WEAK_SHOWERS": {
-                                                "text": "🌦️ Chubascos débiles"
+                                                "text": "🌦️"
                                             },
                                             "OVERCAST_AND_SHOWERS": {
-                                                "text": "🌧️ Cubierto con chubascos"
+                                                "text": "🌧️"
                                             },
                                             "STORM": {
-                                                "text": "⛈️ Tormenta"
+                                                "text": "⛈️"
                                             },
                                             "FOG": {
-                                                "text": "🌫️ Niebla"
+                                                "text": "🌫️"
                                             },
                                             "SNOW": {
-                                                "text": "❄️ Nieve"
+                                                "text": "❄️"
                                             }
                                         },
                                         "type": "value"
@@ -724,7 +986,7 @@
                 "showHeader": true,
                 "sortBy": [
                     {
-                        "displayName": "time",
+                        "displayName": "hora",
                         "desc": false
                     }
                 ],
@@ -741,7 +1003,81 @@
                     "editorMode": "code",
                     "format": "table",
                     "rawQuery": true,
-                    "rawSql": "SELECT DISTINCT ON (r.time) r.time, r.score, r.label, w.temperature, w.wind_speed, w.precipitation, w.sky_state FROM meteogalicia.iad_running r JOIN meteogalicia.weather_hourly w ON r.time = w.time AND r.coord_index = w.coord_index WHERE r.coord_index = ${zona} AND r.time >= NOW() ORDER BY r.time ASC LIMIT 24",
+                    "rawSql": "SELECT DISTINCT ON (r.time) TO_CHAR(r.time AT TIME ZONE 'Europe/Madrid', 'Dy HH24h') as hora, r.score, r.label, w.temperature as temp, w.wind_speed as viento, w.precipitation as lluvia, w.sky_state as cielo FROM meteogalicia.iad_scores r JOIN meteogalicia.weather_hourly w ON r.time = w.time AND r.coord_index = w.coord_index WHERE r.coord_index = ${zona} AND r.sport = '${deporte}' AND r.time >= NOW() ORDER BY r.time ASC LIMIT 24",
+                    "refId": "A"
+                }
+            ]
+        },
+        {
+            "id": 13,
+            "title": "🗺️ Comparativa todas las zonas",
+            "type": "bargauge",
+            "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 0,
+                "y": 27
+            },
+            "datasource": {
+                "type": "postgres",
+                "uid": "timescaledb"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "red",
+                                "value": null
+                            },
+                            {
+                                "color": "orange",
+                                "value": 3
+                            },
+                            {
+                                "color": "yellow",
+                                "value": 5
+                            },
+                            {
+                                "color": "light-green",
+                                "value": 7
+                            },
+                            {
+                                "color": "green",
+                                "value": 8.5
+                            }
+                        ]
+                    },
+                    "min": 0,
+                    "max": 10,
+                    "decimals": 1
+                },
+                "overrides": []
+            },
+            "options": {
+                "reduceOptions": {
+                    "calcs": [
+                        "lastNotNull"
+                    ],
+                    "fields": "",
+                    "values": true
+                },
+                "displayMode": "gradient",
+                "orientation": "horizontal",
+                "showUnfilled": true,
+                "valueMode": "text"
+            },
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "postgres",
+                        "uid": "timescaledb"
+                    },
+                    "editorMode": "code",
+                    "format": "table",
+                    "rawQuery": true,
+                    "rawSql": "WITH next_t AS (SELECT MIN(time) t FROM meteogalicia.iad_scores WHERE sport = '${deporte}' AND time >= NOW()) SELECT DISTINCT ON (s.coord_index) CASE s.coord_index WHEN 0 THEN 'A Coruña' WHEN 1 THEN 'Santiago' WHEN 2 THEN 'Vigo' WHEN 3 THEN 'Lugo' WHEN 4 THEN 'Ourense' WHEN 5 THEN 'Pontevedra' END as zona, s.score FROM meteogalicia.iad_scores s, next_t WHERE s.time = next_t.t AND s.sport = '${deporte}' ORDER BY s.coord_index, s.ts_ingested DESC",
                     "refId": "A"
                 }
             ]
@@ -751,11 +1087,44 @@
     "schemaVersion": 39,
     "tags": [
         "iad",
-        "running",
-        "meteogalicia"
+        "deportes",
+        "galicia",
+        "storytelling"
     ],
     "templating": {
         "list": [
+            {
+                "current": {
+                    "selected": true,
+                    "text": "🏃 Running",
+                    "value": "running"
+                },
+                "description": "Deporte",
+                "hide": 0,
+                "includeAll": false,
+                "label": "Deporte",
+                "multi": false,
+                "name": "deporte",
+                "query": "🏃 Running : running, 🚴 Ciclismo : cycling, 🚵 MTB : mtb",
+                "type": "custom",
+                "options": [
+                    {
+                        "selected": true,
+                        "text": "🏃 Running",
+                        "value": "running"
+                    },
+                    {
+                        "selected": false,
+                        "text": "🚴 Ciclismo",
+                        "value": "cycling"
+                    },
+                    {
+                        "selected": false,
+                        "text": "🚵 MTB",
+                        "value": "mtb"
+                    }
+                ]
+            },
             {
                 "current": {
                     "selected": true,
@@ -811,7 +1180,7 @@
     },
     "timepicker": {},
     "timezone": "Europe/Madrid",
-    "title": "🏃 IAD Running — Galicia",
-    "uid": "iad-running-galicia",
-    "version": 2
+    "title": "🏅 ¿Dónde entreno hoy? — Galicia",
+    "uid": "iad-deportes-galicia",
+    "version": 1
 }

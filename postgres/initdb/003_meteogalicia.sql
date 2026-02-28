@@ -36,11 +36,12 @@ SELECT create_hypertable(
     if_not_exists => TRUE
 );
 
--- ─── Tabla IAD Running: score por coordenada × hora ──────────────────────────
-CREATE TABLE IF NOT EXISTS meteogalicia.iad_running (
-    ts_ingested       TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+-- ─── Tabla IAD Multi-deporte: score por coordenada × hora × deporte ──────────
+CREATE TABLE IF NOT EXISTS meteogalicia.iad_scores (
+    ts_ingested  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     time         TIMESTAMPTZ NOT NULL,
     coord_index  SMALLINT    NOT NULL,
+    sport        TEXT        NOT NULL,
     lon          NUMERIC(9,6),
     lat          NUMERIC(9,6),
     score        NUMERIC(4,2),
@@ -48,6 +49,6 @@ CREATE TABLE IF NOT EXISTS meteogalicia.iad_running (
     details      JSONB
 );
 SELECT create_hypertable(
-    'meteogalicia.iad_running', 'ts_ingested',
+    'meteogalicia.iad_scores', 'ts_ingested',
     if_not_exists => TRUE
 );

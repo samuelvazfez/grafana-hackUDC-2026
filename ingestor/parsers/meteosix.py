@@ -8,14 +8,14 @@ log = logging.getLogger(__name__)
 # Regex para normalizar tz "+01" → "+01:00"
 _TZ_RE = re.compile(r'([+-]\d{2})$')
 
-# Variables MeteoSIX → columnas weather_hourly
-_VAR_MAP = {
+# Variables escalares MeteoSIX → columna weather_hourly
+_SCALAR_MAP = {
     "temperature":          "temperature",
-    "wind_speed":           "wind_speed",
-    "wind_direction":       "wind_direction",
     "precipitation_amount": "precipitation",
     "sky_state":            "sky_state",
 }
+# Variable compuesta "wind" → moduleValue / directionValue
+_WIND_VAR = "wind"
 
 
 def _normalize_tz(ts: str) -> str:
@@ -30,11 +30,40 @@ def _safe_float(v):
         return None
 
 
+def _get_dt(raw_ts: str):
+    """Parse timeInstant con tz normalization."""
+    if not raw_ts:
+        return None
+    try:
+        return datetime.fromisoformat(_normalize_tz(raw_ts))
+    except ValueError:
+        log.warning("timeInstant malformado: %s", raw_ts)
+        return None
+
+
+def _ensure_row(by_time, ts_key, dt, coord_idx, lon, lat):
+    if ts_key not in by_time:
+        by_time[ts_key] = {
+            "time": dt,
+            "coord_index": coord_idx,
+            "lon": lon,
+            "lat": lat,
+            "temperature": None,
+            "wind_speed": None,
+            "wind_direction": None,
+            "precipitation": None,
+            "sky_state": None,
+            "raw": {},
+        }
+    return by_time[ts_key]
+
+
 def parse_meteosix(payload: dict) -> list[dict]:
     """
     Convierte payload GeoJSON de MeteoSIX a filas tidy.
     Una fila por (coord_index, timeInstant).
-    Variables ausentes → None (no rompen el insert).
+    Maneja variables escalares (temperature, precipitation, sky_state)
+    y la variable compuesta 'wind' (moduleValue + directionValue).
     """
     rows = []
     features = payload.get("features", [])
@@ -48,42 +77,39 @@ def parse_meteosix(payload: dict) -> list[dict]:
 
             for var in day.get("variables", []):
                 var_name = var.get("name", "")
-                col_name = _VAR_MAP.get(var_name)
+
+                # ── Variable compuesta "wind" ─────────────────────────
+                if var_name == _WIND_VAR:
+                    for val_obj in var.get("values", []):
+                        dt = _get_dt(val_obj.get("timeInstant", ""))
+                        if dt is None:
+                            continue
+                        ts_key = dt.isoformat()
+                        row = _ensure_row(by_time, ts_key, dt, coord_idx, lon, lat)
+                        row["wind_speed"] = _safe_float(val_obj.get("moduleValue"))
+                        row["wind_direction"] = _safe_float(val_obj.get("directionValue"))
+                        row["raw"]["wind_module"] = val_obj.get("moduleValue")
+                        row["raw"]["wind_direction"] = val_obj.get("directionValue")
+                    continue
+
+                # ── Variables escalares ────────────────────────────────
+                col_name = _SCALAR_MAP.get(var_name)
                 if col_name is None:
                     continue
 
                 for val_obj in var.get("values", []):
-                    raw_ts = val_obj.get("timeInstant", "")
-                    if not raw_ts:
+                    dt = _get_dt(val_obj.get("timeInstant", ""))
+                    if dt is None:
                         continue
-                    try:
-                        dt = datetime.fromisoformat(_normalize_tz(raw_ts))
-                    except ValueError:
-                        log.warning("timeInstant malformado: %s", raw_ts)
-                        continue
-
                     ts_key = dt.isoformat()
-                    if ts_key not in by_time:
-                        by_time[ts_key] = {
-                            "time": dt,
-                            "coord_index": coord_idx,
-                            "lon": lon,
-                            "lat": lat,
-                            "temperature": None,
-                            "wind_speed": None,
-                            "wind_direction": None,
-                            "precipitation": None,
-                            "sky_state": None,
-                            "raw": {},
-                        }
+                    row = _ensure_row(by_time, ts_key, dt, coord_idx, lon, lat)
 
                     raw_val = val_obj.get("value")
                     if col_name == "sky_state":
-                        by_time[ts_key][col_name] = str(raw_val) if raw_val is not None else None
+                        row[col_name] = str(raw_val) if raw_val is not None else None
                     else:
-                        by_time[ts_key][col_name] = _safe_float(raw_val)
-
-                    by_time[ts_key]["raw"][var_name] = raw_val
+                        row[col_name] = _safe_float(raw_val)
+                    row["raw"][var_name] = raw_val
 
             rows.extend(by_time.values())
 

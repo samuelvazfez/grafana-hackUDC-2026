@@ -17,7 +17,8 @@ from fetchers.meteosix import fetch_meteosix
 from fetchers.aemet import fetch_aemet_observaciones, fetch_aemet_avisos
 from parsers.meteosix import parse_meteosix
 from parsers.aemet import parse_aemet_observaciones
-from iad import compute_iad_running
+from iad import compute_all_sports
+from alerter import check_and_send_alerts
 
 logging.basicConfig(
     level=logging.INFO,
@@ -62,8 +63,8 @@ def insert_weather(conn, rows):
 
 
 _INSERT_IAD = """
-INSERT INTO meteogalicia.iad_running
-    (time, coord_index, lon, lat, score, label, details)
+INSERT INTO meteogalicia.iad_scores
+    (time, coord_index, sport, lon, lat, score, label, details)
 VALUES %s
 """
 
@@ -71,7 +72,7 @@ def insert_iad(conn, rows):
     if not rows:
         return 0
     vals = [
-        (r["time"], r["coord_index"], r["lon"], r["lat"],
+        (r["time"], r["coord_index"], r["sport"], r["lon"], r["lat"],
          r["score"], r["label"],
          Json(r["details"]) if r.get("details") else None)
         for r in rows
@@ -81,18 +82,6 @@ def insert_iad(conn, rows):
     conn.commit()
     return len(vals)
 
-
-_UPSERT_AEMET_OBS = """
-INSERT INTO raw_aemet.observaciones
-    (ts_ingested, time, estacion_id, ubicacion,
-     temperatura, humedad, precipitacion, viento_vel, viento_dir, raw_data)
-VALUES %s
-ON CONFLICT (time, estacion_id) DO UPDATE SET
-    ubicacion=EXCLUDED.ubicacion, temperatura=EXCLUDED.temperatura,
-    humedad=EXCLUDED.humedad, precipitacion=EXCLUDED.precipitacion,
-    viento_vel=EXCLUDED.viento_vel, viento_dir=EXCLUDED.viento_dir,
-    raw_data=EXCLUDED.raw_data
-"""
 
 def insert_aemet_obs(conn, rows):
     if not rows:
@@ -118,21 +107,22 @@ def insert_aemet_obs(conn, rows):
 # ── Ciclos de ingesta ─────────────────────────────────────────────────────────
 
 def ingest_meteosix():
-    """Fetch → parse → upsert weather + IAD."""
+    """Fetch → parse → insert weather + IAD (todos los deportes)."""
     payload = fetch_meteosix(METEOSIX_COORDS)
     rows = parse_meteosix(payload)
-    iad_rows = compute_iad_running(rows)
+    iad_rows = compute_all_sports(rows)
 
     with get_conn() as conn:
         insert_raw_weather(conn, "getNumericForecastInfo", METEOSIX_COORDS, payload)
         n_w = insert_weather(conn, rows)
         n_i = insert_iad(conn, iad_rows)
 
-    log.info("[MeteoSIX] raw + %d weather + %d IAD insertados", n_w, n_i)
+    log.info("[MeteoSIX] raw + %d weather + %d IAD (%d deportes) insertados",
+             n_w, n_i, n_i // max(n_w, 1))
 
 
 def ingest_aemet():
-    """Fetch observaciones + avisos → parse → upsert."""
+    """Fetch observaciones + avisos → parse → insert."""
     if not AEMET_API_KEY:
         log.info("[AEMET] Sin API key, saltando")
         return
@@ -166,6 +156,7 @@ def main():
 
     last_meteosix = 0
     last_aemet = 0
+    last_alert = 0
 
     while True:
         now = time.time()
@@ -185,6 +176,14 @@ def main():
             except Exception:
                 log.exception("Error en ingesta AEMET")
             last_aemet = time.time()
+
+        # Alertas
+        if now - last_alert >= 300:  # Cada 5 minutos
+            try:
+                check_and_send_alerts()
+            except Exception:
+                log.exception("Error comprobando alertas")
+            last_alert = time.time()
 
         # Dormir 60s entre comprobaciones
         time.sleep(60)

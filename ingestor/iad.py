@@ -1,82 +1,81 @@
-"""Motor de cálculo del IAD (Índice de Aptitud Deportiva) para running."""
+"""Motor de cálculo del IAD (Índice de Aptitud Deportiva) multi-deporte."""
 import logging
 
 log = logging.getLogger(__name__)
 
-# ── Sub-scores normalizados 0-10 ─────────────────────────────────────────────
+# ══════════════════════════════════════════════════════════════════════════════
+# Sub-scores parametrizables (0-10)
+# ══════════════════════════════════════════════════════════════════════════════
 
-def _temp_score(t) -> float:
-    """Ideal: 10-20°C → 10. Fuera de rango cae linealmente."""
-    if t is None:
-        return 5.0  # sin dato → neutro
-    if 10 <= t <= 20:
+def _score_range(val, ideal_min, ideal_max, abs_min, abs_max, default=5.0):
+    """Score genérico: 10 si val está en [ideal_min, ideal_max], 0 en abs_min/abs_max."""
+    if val is None:
+        return default
+    if ideal_min <= val <= ideal_max:
         return 10.0
-    elif t < 0 or t > 40:
+    if val < abs_min or val > abs_max:
         return 0.0
-    elif t < 10:
-        return max(0, 10 - (10 - t) * 1.0)   # 0°C→0, 10°C→10
-    else:  # t > 20
-        return max(0, 10 - (t - 20) * 0.5)    # 20°C→10, 40°C→0
+    if val < ideal_min:
+        span = ideal_min - abs_min
+        return max(0, 10.0 * (val - abs_min) / span) if span > 0 else 0.0
+    else:  # val > ideal_max
+        span = abs_max - ideal_max
+        return max(0, 10.0 * (abs_max - val) / span) if span > 0 else 0.0
 
 
-def _wind_score(w) -> float:
-    """Ideal: <15 km/h → 10. >40 → 0."""
-    if w is None:
-        return 5.0
-    if w <= 15:
-        return 10.0
-    elif w >= 40:
-        return 0.0
-    else:
-        return max(0, 10 - (w - 15) * 0.4)
-
-
-def _precip_score(p) -> float:
-    """Ideal: 0mm → 10. >10mm → 0."""
+def _precip_score(p, threshold_good, threshold_bad):
+    """0mm = 10. > threshold_bad = 0."""
     if p is None:
         return 5.0
-    if p <= 0.5:
+    if p <= threshold_good:
         return 10.0
-    elif p >= 10:
+    if p >= threshold_bad:
         return 0.0
-    else:
-        return max(0, 10 - p * 1.05)
+    return max(0, 10.0 * (threshold_bad - p) / (threshold_bad - threshold_good))
 
 
-def _sky_score(sky) -> float:
-    """CLEAR/PARTLY_CLOUDY → 10. Otros → baja."""
+def _sky_score(sky):
+    """Cielo: despejado=10, tormenta=0."""
     if sky is None:
         return 5.0
-    sky = sky.upper()
-    scores = {
-        "CLEAR": 10.0,
-        "SUNNY": 10.0,
-        "HIGH_CLOUDS": 9.0,
-        "PARTLY_CLOUDY": 8.0,
-        "CLOUDY": 5.0,
-        "OVERCAST": 4.0,
-        "FOG": 2.0,
-        "DRIZZLE": 2.0,
-        "RAIN": 1.0,
-        "SHOWER": 1.0,
-        "STORM": 0.0,
-        "SNOW": 0.0,
+    s = sky.upper()
+    MAP = {
+        "CLEAR": 10, "SUNNY": 10, "HIGH_CLOUDS": 9, "PARTLY_CLOUDY": 8,
+        "CLOUDY": 5, "OVERCAST": 4, "FOG": 2, "DRIZZLE": 2, "WEAK_SHOWERS": 3,
+        "SHOWERS": 1, "OVERCAST_AND_SHOWERS": 1, "RAIN": 1, "STORM": 0, "SNOW": 0,
     }
-    # Buscar coincidencia parcial
-    for key, val in scores.items():
-        if key in sky:
-            return val
+    for key, val in MAP.items():
+        if key in s:
+            return float(val)
     return 5.0
 
 
-# ── Cálculo IAD ──────────────────────────────────────────────────────────────
+# ══════════════════════════════════════════════════════════════════════════════
+# Perfiles por deporte
+# ══════════════════════════════════════════════════════════════════════════════
 
-# Pesos para running
-WEIGHTS = {
-    "temperature": 0.30,
-    "wind": 0.25,
-    "precipitation": 0.30,
-    "sky": 0.15,
+SPORTS = {
+    "running": {
+        "label": "🏃 Running",
+        "weights": {"temp": 0.30, "wind": 0.25, "precip": 0.30, "sky": 0.15},
+        "temp":   {"ideal_min": 10, "ideal_max": 20, "abs_min": -2, "abs_max": 40},
+        "wind":   {"ideal_min": 0,  "ideal_max": 15, "abs_min": 0,  "abs_max": 45},
+        "precip": {"good": 0.5, "bad": 10},
+    },
+    "cycling": {
+        "label": "🚴 Ciclismo ruta",
+        "weights": {"temp": 0.25, "wind": 0.30, "precip": 0.30, "sky": 0.15},
+        "temp":   {"ideal_min": 15, "ideal_max": 25, "abs_min": 2,  "abs_max": 40},
+        "wind":   {"ideal_min": 0,  "ideal_max": 20, "abs_min": 0,  "abs_max": 55},
+        "precip": {"good": 0.2, "bad": 5},
+    },
+    "mtb": {
+        "label": "🚵 MTB",
+        "weights": {"temp": 0.25, "wind": 0.20, "precip": 0.35, "sky": 0.20},
+        "temp":   {"ideal_min": 10, "ideal_max": 22, "abs_min": 0,  "abs_max": 38},
+        "wind":   {"ideal_min": 0,  "ideal_max": 25, "abs_min": 0,  "abs_max": 60},
+        "precip": {"good": 1.0, "bad": 15},
+    },
 }
 
 LABELS = [
@@ -88,51 +87,64 @@ LABELS = [
 ]
 
 
-def compute_iad_running(weather_rows: list[dict]) -> list[dict]:
+def _get_label(score):
+    for threshold, lbl in LABELS:
+        if score >= threshold:
+            return lbl
+    return "No recomendado"
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# Cálculo principal
+# ══════════════════════════════════════════════════════════════════════════════
+
+def compute_iad(weather_rows: list[dict], sport: str) -> list[dict]:
     """
-    Calcula IAD running para cada fila de weather_hourly.
-    Devuelve lista de dicts con: time, coord_index, lon, lat, score, label, details.
+    Calcula IAD para un deporte dado.
+    Devuelve lista con: time, coord_index, lon, lat, sport, score, label, details.
     """
+    cfg = SPORTS.get(sport)
+    if not cfg:
+        raise ValueError(f"Deporte desconocido: {sport}")
+
+    w = cfg["weights"]
     iad_rows = []
+
     for r in weather_rows:
-        ts = _temp_score(r.get("temperature"))
-        ws = _wind_score(r.get("wind_speed"))
-        ps = _precip_score(r.get("precipitation"))
+        ts = _score_range(r.get("temperature"), **cfg["temp"])
+        ws = _score_range(r.get("wind_speed"),  **cfg["wind"])
+        ps = _precip_score(r.get("precipitation"), cfg["precip"]["good"], cfg["precip"]["bad"])
         ss = _sky_score(r.get("sky_state"))
 
         score = round(
-            ts * WEIGHTS["temperature"]
-            + ws * WEIGHTS["wind"]
-            + ps * WEIGHTS["precipitation"]
-            + ss * WEIGHTS["sky"],
-            2,
+            ts * w["temp"] + ws * w["wind"] + ps * w["precip"] + ss * w["sky"], 2
         )
         score = max(0.0, min(10.0, score))
-
-        label = "No recomendado"
-        for threshold, lbl in LABELS:
-            if score >= threshold:
-                label = lbl
-                break
 
         iad_rows.append({
             "time": r["time"],
             "coord_index": r["coord_index"],
             "lon": r.get("lon"),
             "lat": r.get("lat"),
+            "sport": sport,
             "score": score,
-            "label": label,
+            "label": _get_label(score),
             "details": {
-                "temp_score": ts,
-                "wind_score": ws,
-                "precip_score": ps,
-                "sky_score": ss,
-                "temp": r.get("temperature"),
-                "wind": r.get("wind_speed"),
-                "precip": r.get("precipitation"),
-                "sky": r.get("sky_state"),
+                "temp_score": round(ts, 2), "wind_score": round(ws, 2),
+                "precip_score": round(ps, 2), "sky_score": round(ss, 2),
+                "temp": r.get("temperature"), "wind": r.get("wind_speed"),
+                "precip": r.get("precipitation"), "sky": r.get("sky_state"),
             },
         })
 
-    log.info("[IAD] Calculados %d scores running", len(iad_rows))
+    log.info("[IAD] %s → %d scores", sport, len(iad_rows))
     return iad_rows
+
+
+def compute_all_sports(weather_rows: list[dict]) -> list[dict]:
+    """Calcula IAD para todos los deportes. Devuelve lista combinada."""
+    all_rows = []
+    for sport in SPORTS:
+        all_rows.extend(compute_iad(weather_rows, sport))
+    log.info("[IAD] Total %d scores (%d deportes)", len(all_rows), len(SPORTS))
+    return all_rows

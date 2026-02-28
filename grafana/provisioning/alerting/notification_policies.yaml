@@ -1,0 +1,6 @@
+apiVersion: 1
+policies:
+  - orgId: 1
+    receiver: 'Discord Alertas'
+    group_by: ['grafana_folder', 'alertname']
+    repeat_interval: '10m'

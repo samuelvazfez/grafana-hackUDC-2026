@@ -1,0 +1,54 @@
+apiVersion: 1
+groups:
+  - orgId: 1
+    name: 'Condiciones Extremas'
+    folder: 'Alertas Deporte'
+    interval: 5m
+    rules:
+      - uid: 'iad_bajo'
+        title: 'IAD Peligroso (< 3.0)'
+        condition: B
+        data:
+          - refId: A
+            queryType: ''
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: 'timescaledb'
+            model:
+              editorMode: code
+              format: table
+              rawQuery: true
+              rawSql: "SELECT CASE coord_index WHEN 0 THEN 'A Coruña' WHEN 1 THEN 'Santiago' WHEN 2 THEN 'Vigo' WHEN 3 THEN 'Lugo' WHEN 4 THEN 'Ourense' WHEN 5 THEN 'Pontevedra' END as zona, MIN(score) as score FROM meteogalicia.iad_scores WHERE time BETWEEN NOW() AND NOW() + INTERVAL '3 hours' GROUP BY coord_index"
+              refId: A
+          - refId: B
+            datasourceUid: '-100'
+            model:
+              conditions:
+                - evaluator:
+                    params: [3.0]
+                    type: lt
+                  operator:
+                    type: and
+                  query:
+                    params: [A]
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Error
+        for: 0m
+        annotations:
+          summary: "⚠️ IAD Crítico detectado en {{ $labels.zona }}"
+          description: "El Índice de Aptitud Deportiva es peligrosamente bajo ({{ $values.B.Value }} / 10). Se desaconseja hacer deporte."
+        labels:
+          severity: critical

@@ -30,3 +30,7 @@ CACHE_TTL_SECONDS = int(os.getenv("CACHE_TTL_SECONDS", str(25 * 3600)))  # 25h
 # ── Poll ──────────────────────────────────────────────────────────────────────
 POLL_METEOSIX_SECONDS = int(os.getenv("POLL_SECONDS", str(6 * 3600)))       # 6h
 POLL_AEMET_SECONDS    = int(os.getenv("POLL_AEMET_SECONDS", str(30 * 60)))  # 30min
+
+# ── Alertas ───────────────────────────────────────────────────────────────────
+DISCORD_WEBHOOK_URL = os.getenv("DISCORD_WEBHOOK_URL", "")
+
