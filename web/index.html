@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Galaecia Metrics</title>
+  <link rel="icon" type="image/png" href="images/hackudc26.png" />
+
+  <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@200;400;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<!-- BACKGROUND CANVAS -->
+<div class="bg-canvas">
+  <canvas id="waveCanvas"></canvas>
+</div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">
+    <img src="images/hackudc26.png" alt="Galaecia Metrics" />
+  </div>
+  <ul class="nav-links">
+    <li><a href="#deportes">Deportes</a></li>
+    <li><a href="#dashboards">Dashboards</a></li>
+    <li><a href="#alertas">Alertas</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <img src="images/hackudc26.png" alt="Galaecia Metrics" class="hero-logo" />
+  <p class="hero-tagline">Meteorología deportiva en tiempo real</p>
+  <h1 class="hero-title">El tiempo<br/>que necesitas<br/>para tu deporte</h1>
+  <p class="hero-sub">
+    Alertas meteorológicas precisas, dashboards en tiempo real y análisis
+    de condiciones para que nunca pierdas una jornada perfecta al aire libre.
+  </p>
+  <div class="hero-cta">
+    <a href="#dashboards" class="btn btn-primary">Ver Dashboards</a>
+    <a href="#deportes" class="btn btn-outline">Explorar Deportes</a>
+  </div>
+  <div class="scroll-hint">
+    <span>scroll</span>
+    <div class="arrow"></div>
+  </div>
+</section>
+
+<!-- ALERT TICKER -->
+<div class="alert-bar" id="alertas">
+  <div class="alert-ticker">
+    <span class="alert-item">⚡ Viento fuerte en A Coruña · 45 km/h NO · evitar kitesurf</span>
+    <span class="alert-item">🌊 Oleaje 2.1m en Pantín · condiciones buenas para surf</span>
+    <span class="alert-item">☀️ Soleado en Santiago · UV alto · ciclismo recomendado</span>
+    <span class="alert-item">🌧️ Lluvia prevista en Vigo esta tarde · posponer trail</span>
+    <span class="alert-item">🏄 Olas perfectas mañana en Razo · 1.4m periodo 14s</span>
+    <span class="alert-item">⚡ Viento fuerte en A Coruña · 45 km/h NO · evitar kitesurf</span>
+    <span class="alert-item">🌊 Oleaje 2.1m en Pantín · condiciones buenas para surf</span>
+    <span class="alert-item">☀️ Soleado en Santiago · UV alto · ciclismo recomendado</span>
+    <span class="alert-item">🌧️ Lluvia prevista en Vigo esta tarde · posponer trail</span>
+    <span class="alert-item">🏄 Olas perfectas mañana en Razo · 1.4m periodo 14s</span>
+  </div>
+</div>
+
+<!-- SPORTS GRID -->
+<div class="section" id="deportes">
+  <p class="section-label">// Condiciones actuales</p>
+  <h2 class="section-title">¿Qué deporte practicas hoy?</h2>
+  <div class="sports-grid" id="sportsGrid">
+    <!-- Generado dinámicamente por main.js -->
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- STATS ROW -->
+<div class="stats-row">
+  <div class="stat-box">
+    <div class="stat-num" id="counter1">0</div>
+    <div class="stat-label">Zonas monitorizadas</div>
+  </div>
+  <div class="stat-box">
+    <div class="stat-num" id="counter2">0</div>
+    <div class="stat-label">Métricas en tiempo real</div>
+  </div>
+  <div class="stat-box">
+    <div class="stat-num" id="counter3">0</div>
+    <div class="stat-label">Alertas enviadas hoy</div>
+  </div>
+  <div class="stat-box">
+    <div class="stat-num" id="counter4">0</div>
+    <div class="stat-label">Deportistas activos</div>
+  </div>
+</div>
+
+<!-- GRAFANA DASHBOARDS -->
+<div class="dashboard-section" id="dashboards">
+  <div class="dashboard-inner">
+    <p class="section-label">// Grafana Live</p>
+    <h2 class="section-title">Dashboards en tiempo real</h2>
+
+    <div class="dashboard-tabs">
+      <button class="tab active" onclick="switchTab(this, 'surf')">🏄 Surf & Kite</button>
+      <button class="tab" onclick="switchTab(this, 'ciclo')">🚴 Ciclismo</button>
+      <button class="tab" onclick="switchTab(this, 'trail')">🏃 Trail</button>
+      <button class="tab" onclick="switchTab(this, 'vela')">⛵ Vela</button>
+      <button class="tab" onclick="switchTab(this, 'general')">🌍 General</button>
+    </div>
+
+    <div class="grafana-frame-wrapper">
+      <div class="grafana-placeholder" id="grafanaPlaceholder">
+        <div class="big-icon">📊</div>
+        <strong style="color:var(--text)">Dashboard: Surf & Kite</strong>
+        <p>Configura la URL de tu dashboard de Grafana para visualizarlo aquí.</p>
+        <span class="config-badge">⚙ Pendiente de configuración</span>
+        <small style="margin-top:.5rem; opacity:.6">Ver comentarios en main.js</small>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <img src="images/hackudc26.png" alt="Galaecia Metrics" />
+  <p>© 2026 Galaecia Metrics · HackUDC</p>
+</footer>
+
+<script src="main.js"></script>
+</body>
+</html>

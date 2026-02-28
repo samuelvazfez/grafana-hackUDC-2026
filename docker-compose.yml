@@ -85,6 +85,16 @@ services:
       - ingestor_cache:/app/cache
     networks:
       - app_net
+  web: 
+    image: nginx:alpine
+    container_name: web
+    restart: unless-stopped
+    volumes:
+      - ./web:/usr/share/nginx/html:ro
+    ports:
+      - "8080:80"
+    networks:
+      - app_net
 volumes:
   grafana_storage:
   ingestor_cache:
