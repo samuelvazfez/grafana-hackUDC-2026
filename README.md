@@ -148,7 +148,7 @@ DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/...
 ### 3. Arrancar los servicios
 
 ```bash
-docker compose up -d
+docker compose up --build -d
 ```
 
 ### 4. Acceder
