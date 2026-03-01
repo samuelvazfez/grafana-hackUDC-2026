@@ -15,9 +15,15 @@
 }
 
 /* ── RESET & BASE ── */
-* { margin: 0; padding: 0; box-sizing: border-box; }
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-html { scroll-behavior: smooth; }
+html {
+  scroll-behavior: smooth;
+}
 
 body {
   font-family: 'Exo 2', sans-serif;
@@ -35,18 +41,23 @@ body {
   pointer-events: none;
 }
 
-.bg-canvas canvas { width: 100%; height: 100%; }
+.bg-canvas canvas {
+  width: 100%;
+  height: 100%;
+}
 
 /* ── NAV ── */
 nav {
   position: fixed;
-  top: 0; left: 0; right: 0;
+  top: 0;
+  left: 0;
+  right: 0;
   z-index: 100;
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 1rem 3rem;
-  background: linear-gradient(to bottom, rgba(6,10,15,0.95), transparent);
+  background: linear-gradient(to bottom, rgba(6, 10, 15, 0.95), transparent);
   backdrop-filter: blur(6px);
 }
 
@@ -56,7 +67,9 @@ nav {
   gap: .8rem;
 }
 
-.nav-logo img { height: 40px; }
+.nav-logo img {
+  height: 40px;
+}
 
 .nav-links {
   display: flex;
@@ -74,7 +87,9 @@ nav {
   transition: color .3s;
 }
 
-.nav-links a:hover { color: var(--cyan); }
+.nav-links a:hover {
+  color: var(--cyan);
+}
 
 /* ── HERO ── */
 .hero {
@@ -97,8 +112,17 @@ nav {
 }
 
 @keyframes floatLogo {
-  0%, 100% { transform: translateY(0px);   filter: drop-shadow(0 0 40px var(--cyan-glow)); }
-  50%       { transform: translateY(-12px); filter: drop-shadow(0 0 60px #00c8ff88); }
+
+  0%,
+  100% {
+    transform: translateY(0px);
+    filter: drop-shadow(0 0 40px var(--cyan-glow));
+  }
+
+  50% {
+    transform: translateY(-12px);
+    filter: drop-shadow(0 0 60px #00c8ff88);
+  }
 }
 
 .hero-tagline {
@@ -205,8 +229,15 @@ nav {
 }
 
 @keyframes bounceArrow {
-  0%, 100% { transform: rotate(45deg) translateY(0); }
-  50%       { transform: rotate(45deg) translateY(6px); }
+
+  0%,
+  100% {
+    transform: rotate(45deg) translateY(0);
+  }
+
+  50% {
+    transform: rotate(45deg) translateY(6px);
+  }
 }
 
 /* ── SECTIONS ── */
@@ -267,7 +298,9 @@ nav {
   box-shadow: 0 8px 30px var(--cyan-glow);
 }
 
-.sport-card:hover::before { opacity: 1; }
+.sport-card:hover::before {
+  opacity: 1;
+}
 
 .sport-icon {
   font-size: 2.5rem;
@@ -288,9 +321,17 @@ nav {
   font-family: 'Space Mono', monospace;
 }
 
-.status-good { color: #3dffa0; }
-.status-warn { color: #ffcc00; }
-.status-bad  { color: #ff4d6d; }
+.status-good {
+  color: #3dffa0;
+}
+
+.status-warn {
+  color: #ffcc00;
+}
+
+.status-bad {
+  color: #ff4d6d;
+}
 
 /* ── ALERT TICKER ── */
 .alert-bar {
@@ -320,8 +361,13 @@ nav {
 }
 
 @keyframes ticker {
-  0%   { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
 }
 
 /* ── STATS ROW ── */
@@ -360,11 +406,11 @@ nav {
   position: relative;
   z-index: 1;
   background: var(--surface);
-  padding: 5rem 2rem;
+  padding: 5rem 2rem 0;
 }
 
 .dashboard-inner {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
 }
 
@@ -399,25 +445,10 @@ nav {
 .grafana-frame-wrapper {
   position: relative;
   width: 100%;
-  background: #070f18;
-  border: 1px solid #1a2e40;
-  border-radius: 8px;
+  background: #111217;
+  border: 1px solid #1a2e4033;
+  border-radius: 12px;
   overflow: hidden;
-}
-
-.grafana-frame-wrapper::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, var(--cyan), #0097c4, var(--cyan));
-  background-size: 200%;
-  animation: gradLine 3s linear infinite;
-}
-
-@keyframes gradLine {
-  0%   { background-position: 0% 50%; }
-  100% { background-position: 200% 50%; }
 }
 
 .grafana-placeholder {
@@ -433,7 +464,10 @@ nav {
   text-align: center;
 }
 
-.grafana-placeholder .big-icon { font-size: 3rem; opacity: .4; }
+.grafana-placeholder .big-icon {
+  font-size: 3rem;
+  opacity: .4;
+}
 
 .config-badge {
   display: inline-block;
@@ -449,7 +483,7 @@ nav {
 
 .grafana-frame {
   width: 100%;
-  height: 600px;
+  height: 1700px;
   border: none;
   display: block;
 }
@@ -463,7 +497,11 @@ footer {
   border-top: 1px solid #1a2e40;
 }
 
-footer img { height: 32px; opacity: .6; margin-bottom: 1rem; }
+footer img {
+  height: 32px;
+  opacity: .6;
+  margin-bottom: 1rem;
+}
 
 footer p {
   font-size: .8rem;
@@ -473,8 +511,15 @@ footer p {
 
 /* ── HELPERS ── */
 @keyframes fadeUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .divider {

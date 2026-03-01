@@ -3,27 +3,27 @@ const canvas = document.getElementById('waveCanvas');
 const ctx = canvas.getContext('2d');
 
 function resize() {
-  canvas.width  = window.innerWidth;
+  canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
 }
 resize();
 window.addEventListener('resize', resize);
 
 const waves = Array.from({ length: 4 }, (_, i) => ({
-  amp:    40  + i * 20,
-  freq:   0.003 + i * 0.0001,
-  speed:  0.0000008 + i * 0.000000001,
+  amp: 40 + i * 20,
+  freq: 0.003 + i * 0.0001,
+  speed: 0.0000008 + i * 0.000000001,
   offset: i * Math.PI / 2,
-  y:      0.55 + i * 0.12,
-  alpha:  0.06 - i * 0.01,
+  y: 0.55 + i * 0.12,
+  alpha: 0.06 - i * 0.01,
 }));
 
 const particles = Array.from({ length: 60 }, () => ({
-  x:     Math.random() * window.innerWidth,
-  y:     Math.random() * window.innerHeight,
-  r:     Math.random() * 1.5 + 0.5,
-  vx:    (Math.random() - 0.5) * 0.3,
-  vy:    (Math.random() - 0.5) * 0.15,
+  x: Math.random() * window.innerWidth,
+  y: Math.random() * window.innerHeight,
+  r: Math.random() * 1.5 + 0.5,
+  vx: (Math.random() - 0.5) * 0.3,
+  vy: (Math.random() - 0.5) * 0.15,
   alpha: Math.random() * 0.5 + 0.1,
 }));
 
@@ -52,7 +52,7 @@ function draw() {
     p.x += p.vx;
     p.y += p.vy;
     if (p.x < 0) p.x = canvas.width;
-    if (p.x > canvas.width)  p.x = 0;
+    if (p.x > canvas.width) p.x = 0;
     if (p.y < 0) p.y = canvas.height;
     if (p.y > canvas.height) p.y = 0;
 
@@ -70,14 +70,14 @@ draw();
 
 /* ── SPORTS CARDS ── */
 const sports = [
-  { icon: '🏄', name: 'Surf',      status: 'good', text: 'Óptimo' },
-  { icon: '🪁', name: 'Kitesurf',  status: 'warn', text: 'Viento fuerte' },
-  { icon: '🚴', name: 'Ciclismo',  status: 'good', text: 'Ideal' },
-  { icon: '🏃', name: 'Trail',     status: 'good', text: 'Perfecto' },
-  { icon: '⛵', name: 'Vela',      status: 'warn', text: 'Precaución' },
-  { icon: '🧗', name: 'Escalada',  status: 'bad',  text: 'Lluvia' },
-  { icon: '🏊', name: 'Natación',  status: 'good', text: 'Ideal' },
-  { icon: '🛶', name: 'Kayak',     status: 'warn', text: 'Corriente' },
+  { icon: '🏄', name: 'Surf', status: 'good', text: 'Óptimo' },
+  { icon: '🪁', name: 'Kitesurf', status: 'warn', text: 'Viento fuerte' },
+  { icon: '🚴', name: 'Ciclismo', status: 'good', text: 'Ideal' },
+  { icon: '🏃', name: 'Trail', status: 'good', text: 'Perfecto' },
+  { icon: '⛵', name: 'Vela', status: 'warn', text: 'Precaución' },
+  { icon: '🧗', name: 'Escalada', status: 'bad', text: 'Lluvia' },
+  { icon: '🏊', name: 'Natación', status: 'good', text: 'Ideal' },
+  { icon: '🛶', name: 'Kayak', status: 'warn', text: 'Corriente' },
 ];
 
 const grid = document.getElementById('sportsGrid');
@@ -130,12 +130,13 @@ statsObserver.observe(document.querySelector('.stats-row'));
     enabled  = true
     org_role = Viewer
 */
+const GRAFANA_BASE = 'http://localhost:3000';
 const dashboardConfig = {
-  surf:    { name: 'Surf & Kite',   url: 'http://localhost:3000/goto/ffemt6go9mc5cb?orgId=1&kiosk=1' },
-  ciclo:   { name: 'Ciclismo',      url: 'http://localhost:3000/goto/ffemt6go9mc5cb?orgId=1&kiosk=1' },
-  trail:   { name: 'Trail Running', url: 'http://localhost:3000/goto/ffemt6go9mc5cb?orgId=1&kiosk=1' },
-  vela:    { name: 'Vela',          url: 'http://localhost:3000/goto/ffemt6go9mc5cb?orgId=1&kiosk=1' },
-  general: { name: 'General',       url: 'http://localhost:3000/goto/ffemt6go9mc5cb?orgId=1&kiosk=1' },
+  trail: { name: 'Running', url: `${GRAFANA_BASE}/d/running-galicia-v2/viabilidad-running-galicia?orgId=1&theme=dark&kiosk` },
+  surf: { name: 'Surf & Kite', url: '' },
+  ciclo: { name: 'Ciclismo', url: '' },
+  vela: { name: 'Vela', url: '' },
+  general: { name: 'General', url: `${GRAFANA_BASE}/d/running-galicia-v2/viabilidad-running-galicia?orgId=1&theme=dark&kiosk` },
 };
 
 function switchTab(btn, key) {
@@ -143,7 +144,7 @@ function switchTab(btn, key) {
   btn.classList.add('active');
 
   const cfg = dashboardConfig[key];
-  const ph  = document.getElementById('grafanaPlaceholder');
+  const ph = document.getElementById('grafanaPlaceholder');
 
   if (cfg.url) {
     ph.innerHTML = `<iframe class="grafana-frame" src="${cfg.url}" allowfullscreen></iframe>`;
@@ -156,3 +157,9 @@ function switchTab(btn, key) {
       <small style="margin-top:.5rem; opacity:.6">Ver comentarios en main.js</small>`;
   }
 }
+
+// Auto-load the Running dashboard on page init
+window.addEventListener('DOMContentLoaded', () => {
+  const defaultBtn = document.querySelector('.tab.active');
+  if (defaultBtn) switchTab(defaultBtn, 'trail');
+});
