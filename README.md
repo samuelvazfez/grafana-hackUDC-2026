@@ -17,13 +17,13 @@
 
 ---
 
-## 📋 Descripción
+## Descripción
 
 **Galaecia Metrics** es una plataforma que ingesta, almacena y visualiza datos meteorológicos de múltiples fuentes públicas con enfoque en la **viabilidad deportiva al aire libre** en las principales ciudades de Galicia (A Coruña, Santiago, Vigo, Lugo, Ourense y Pontevedra).
 
 El sistema calcula un **Índice de Aptitud Deportiva (IAD)** personalizado para running que combina temperatura, viento, precipitación y estado del cielo en una puntuación de 0 a 10, indicando si las condiciones son ideales para salir a correr.
 
-### ✨ Características principales
+### Características principales
 
 - 📊 **Dashboard interactivo** con Grafana: running score, previsión 24h, temperatura, lluvia, viento, nubosidad, polen, AQI y UV
 - 🏃 **IAD (Índice de Aptitud Deportiva)** — algoritmo propio que puntúa las condiciones para correr de 0 a 10
@@ -34,7 +34,7 @@ El sistema calcula un **Índice de Aptitud Deportiva (IAD)** personalizado para 
 
 ---
 
-## 🏗️ Arquitectura
+## Arquitectura
 
 ```
 ┌───────────────┐     ┌──────────────────┐     ┌─────────────┐
@@ -65,7 +65,7 @@ El sistema calcula un **Índice de Aptitud Deportiva (IAD)** personalizado para 
 
 ---
 
-## 📡 Fuentes de datos
+## Fuentes de datos
 
 | API | Datos | Frecuencia |
 |-----|-------|------------|
@@ -87,7 +87,7 @@ El sistema calcula un **Índice de Aptitud Deportiva (IAD)** personalizado para 
 
 ---
 
-## 🧠 IAD — Índice de Aptitud Deportiva
+## IAD — Índice de Aptitud Deportiva
 
 El IAD es un score compuesto de **0 a 10** que evalúa las condiciones para running basándose en sub-scores ponderados:
 
@@ -110,7 +110,7 @@ El IAD es un score compuesto de **0 a 10** que evalúa las condiciones para runn
 
 ---
 
-## 🚀 Instalación y uso
+## Instalación y uso
 
 ### Prerrequisitos
 
@@ -161,7 +161,7 @@ docker compose up -d
 
 ---
 
-## 📁 Estructura del proyecto
+## Estructura del proyecto
 
 ```
 grafana-hackUDC-2026/
@@ -210,7 +210,7 @@ grafana-hackUDC-2026/
 
 ---
 
-## 🔔 Sistema de alertas
+## Sistema de alertas
 
 El ingestor evalúa umbrales cada **5 minutos** y envía notificaciones a Discord:
 
@@ -224,7 +224,7 @@ Para configurar las alertas, crea un **Webhook** en tu servidor de Discord y peg
 
 ---
 
-## 🛠️ Tecnologías
+## Tecnologías
 
 - **Python 3.12** — ingestor, parsers, alerter
 - **PostgreSQL 16 + TimescaleDB** — base de datos temporal optimizada
@@ -235,7 +235,7 @@ Para configurar las alertas, crea un **Webhook** en tu servidor de Discord y peg
 
 ---
 
-## 📄 Licencia
+## Licencia
 
 Este proyecto está licenciado bajo la **MIT License**. Ver [LICENSE](LICENSE) para más detalles.
 
@@ -251,16 +251,9 @@ Se ha elegido la licencia **MIT** por las siguientes razones:
 
 ---
 
-## 👥 Equipo
-
-Desarrollado con ❤️ durante **HackUDC 2026** en la Universidade da Coruña.
+## Equipo
 
 - Alejandro Quintela Río
 - Samuel Vázquez Fernández
 - Jacobo Estévez Rouco
 - Andrés Paz Paredes
----
-
-<p align="center">
-  <sub>Hecho en Galicia 🌊</sub>
-</p>
