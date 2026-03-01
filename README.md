@@ -1,8 +1,6 @@
 <p align="center">
-  <img src="web/images/hackudc26.png" alt="Galaecia Metrics" width="180"/>
+  <img src="web/images/hackudc26.png" alt="Galaecia Metrics" width="500"/>
 </p>
-
-<h1 align="center">🏃 Galaecia Metrics</h1>
 
 <p align="center">
   <strong>Plataforma de meteorología deportiva en tiempo real para Galicia</strong><br/>
